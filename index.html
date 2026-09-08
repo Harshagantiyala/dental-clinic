@@ -15,6 +15,8 @@
         rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <!-- Lenis Smooth Scroll -->
+    <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
     <script>
@@ -372,10 +374,137 @@
             pointer-events: auto;
             transform: scale(1) translateY(0);
         }
+    
+        /* ═══════════════════════════════════════════════════════════
+           AWARD-WINNING SCROLL ANIMATIONS & LUXURY STYLES
+        ═══════════════════════════════════════════════════════════ */
+        
+        /* Lenis smooth scrolling base */
+        html.lenis, html.lenis body {
+            height: auto;
+        }
+        
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
+        }
+        
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+        
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+        
+        .lenis.lenis-smooth iframe {
+            pointer-events: none;
+        }
+
+        /* Glass spotlight card */
+        .spotlight-card {
+            position: relative;
+            overflow: hidden;
+            --mouse-x: 50%;
+            --mouse-y: 50%;
+            --spotlight-color: rgba(14, 165, 233, 0.12);
+        }
+        
+        .spotlight-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), var(--spotlight-color), transparent 40%);
+            opacity: 0;
+            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .spotlight-card:hover::before {
+            opacity: 1;
+        }
+
+        /* Magnetic button hover */
+        .magnetic-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
+            will-change: transform;
+        }
+
+        /* Ambient Glow Pulse */
+        @keyframes ambient-glow {
+            0%, 100% {
+                opacity: 0.35;
+                transform: scale(1) translate(0, 0);
+            }
+            50% {
+                opacity: 0.65;
+                transform: scale(1.08) translate(15px, -10px);
+            }
+        }
+
+        .glow-orb {
+            animation: ambient-glow 9s ease-in-out infinite alternate;
+        }
+
+        /* Smooth reveal defaults - GSAP will handle progressive enhancement */
+        .reveal {
+            opacity: 0;
+            transform: translateY(32px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+        }
+
+        .reveal.revealed {
+            opacity: 1;
+            transform: translateY(0) !important;
+        }
+
+        /* Parallax item helper */
+        .parallax-layer {
+            will-change: transform;
+        }
+
+        /* Shimmer highlight for hero badge */
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .shimmer-badge {
+            background: linear-gradient(90deg, rgba(240,249,255,0.8) 0%, rgba(224,242,254,1) 50%, rgba(240,249,255,0.8) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 5s infinite linear;
+        }
+
     </style>
 </head>
 
 <body>
+
+    <!-- Top Scroll Progress Bar -->
+    <div id="scroll-progress-container" class="fixed top-0 left-0 w-full h-[3px] z-[100] pointer-events-none bg-slate-200/20">
+        <div id="scroll-progress-bar" class="h-full w-0 bg-gradient-to-r from-sky-400 via-teal-400 to-cyan-300 shadow-[0_0_12px_rgba(14,165,233,0.8)] transition-all duration-75"></div>
+    </div>
+
+    <!-- Floating Scroll-To-Top HUD with Circular Progress -->
+    <button id="scroll-to-top" onclick="lenisScrollToTop()" aria-label="Scroll to top"
+        class="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full glass border border-white/60 shadow-xl flex items-center justify-center text-sky-600 opacity-0 pointer-events-none transition-all duration-300 hover:scale-110 hover:shadow-sky-500/20 group">
+        <svg class="w-10 h-10 -rotate-90" viewBox="0 0 36 36">
+            <circle cx="18" cy="18" r="15.5" fill="none" stroke="rgba(14, 165, 233, 0.15)" stroke-width="2.5"></circle>
+            <circle id="scroll-circle-progress" cx="18" cy="18" r="15.5" fill="none" stroke="url(#circle-grad)" stroke-width="2.5" stroke-dasharray="97.4" stroke-dashoffset="97.4" stroke-linecap="round"></circle>
+            <defs>
+                <linearGradient id="circle-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#0EA5E9" />
+                    <stop offset="100%" stop-color="#14B8A6" />
+                </linearGradient>
+            </defs>
+        </svg>
+        <i data-lucide="chevron-up" class="w-5 h-5 absolute group-hover:-translate-y-0.5 transition-transform"></i>
+    </button>
+
 
     <!-- ═══════════════════════════════════════════════════════════
      NAV
@@ -413,10 +542,15 @@
 
             <!-- Actions -->
             <div class="flex items-center gap-2">
+                <a href="tel:+919876543210" class="hidden sm:inline-flex items-center gap-2 text-xs font-semibold text-slate-700 hover:text-sky-700 bg-white/70 hover:bg-sky-50/80 px-3.5 py-2.5 rounded-xl border border-slate-200/80 transition-all shadow-sm group">
+                    <span class="w-2 h-2 rounded-full bg-teal-500 pulse-dot"></span>
+                    <i data-lucide="phone" class="w-3.5 h-3.5 text-sky-600 group-hover:rotate-12 transition-transform"></i>
+                    <span>Swamy: <strong class="text-ink font-bold">+91 98765 43210</strong></span>
+                </a>
                 <button onclick="openModal()"
-                    class="cta-primary text-white text-sm font-semibold px-5 py-2.5 rounded-xl flex items-center gap-2">
-                    <i data-lucide="sparkles" class="w-4 h-4"></i>
-                    <span>Book Demo</span>
+                    class="cta-primary text-white text-sm font-semibold px-5 py-2.5 rounded-xl flex items-center gap-2 shadow-lg shadow-sky-500/20 hover:shadow-sky-500/40 transition-all">
+                    <i data-lucide="calendar" class="w-4 h-4"></i>
+                    <span>Book Appointment</span>
                 </button>
 
                 <!-- Mobile Hamburger Toggle -->
@@ -456,13 +590,13 @@
                 <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
             </a>
             <div class="pt-3 border-t border-slate-100 flex gap-2">
-                <a href="tel:+15551234567"
-                    class="flex-1 text-center py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700">
-                    Call Studio
+                <a href="tel:+919876543210"
+                    class="flex-1 text-center py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 flex items-center justify-center gap-1.5 bg-slate-50">
+                    <i data-lucide="phone" class="w-3.5 h-3.5 text-sky-600"></i> Call Swamy
                 </a>
                 <button onclick="toggleMobileMenu(); openModal();"
-                    class="flex-1 text-center py-2.5 rounded-xl cta-primary text-sm font-semibold text-white">
-                    Book Consult
+                    class="flex-1 text-center py-2.5 rounded-xl cta-primary text-xs font-semibold text-white flex items-center justify-center gap-1.5">
+                    <i data-lucide="calendar" class="w-3.5 h-3.5"></i> Book Appointment
                 </button>
             </div>
         </div>
@@ -504,16 +638,16 @@
 
                 <!-- CTAs -->
                 <div class="mt-9 flex flex-wrap gap-3 reveal">
-                    <button onclick="openQuiz()"
-                        class="cta-primary text-white text-sm font-semibold px-6 py-3.5 rounded-xl flex items-center gap-2">
-                        <i data-lucide="scan-face" class="w-4 h-4"></i>
-                        Try Virtual Smile Assessment
+                    <button onclick="openModal()"
+                        class="cta-primary text-white text-sm font-semibold px-6 py-3.5 rounded-xl flex items-center gap-2 shadow-xl shadow-sky-500/25 hover:shadow-sky-500/45 transition-all">
+                        <i data-lucide="calendar-check" class="w-4 h-4"></i>
+                        Book Appointment
                     </button>
-                    <a href="#services"
-                        class="cta-ghost text-sm font-semibold px-6 py-3.5 rounded-xl flex items-center gap-2 text-ink">
-                        Explore treatments
-                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                    </a>
+                    <button onclick="openQuiz()"
+                        class="cta-ghost text-sm font-semibold px-6 py-3.5 rounded-xl flex items-center gap-2 text-ink bg-white/80 hover:bg-slate-50">
+                        <i data-lucide="scan-face" class="w-4 h-4 text-sky-600"></i>
+                        Virtual Smile Assessment
+                    </button>
                 </div>
 
                 <!-- Social proof -->
@@ -547,18 +681,18 @@
 
                 <!-- Trust badges -->
                 <div class="mt-8 flex flex-wrap gap-2 reveal">
+                    <a href="tel:+919876543210"
+                        class="text-xs px-3.5 py-1.5 rounded-full bg-teal-50 border border-teal-200 text-teal-800 font-semibold flex items-center gap-1.5 hover:bg-teal-100 transition-colors shadow-sm">
+                        <i data-lucide="phone-call" class="w-3.5 h-3.5 text-teal-600 animate-pulse"></i>
+                        Direct Demo Line (Swamy): +91 98765 43210
+                    </a>
                     <span
-                        class="text-xs px-3 py-1.5 rounded-full bg-white border border-slate-200/70 text-slate-600 flex items-center gap-1.5">
+                        class="text-xs px-3 py-1.5 rounded-full bg-white border border-slate-200/70 text-slate-600 flex items-center gap-1.5 shadow-sm">
                         <i data-lucide="shield-check" class="w-3.5 h-3.5 text-teal-500"></i>
                         ISO 9001 Certified
                     </span>
                     <span
-                        class="text-xs px-3 py-1.5 rounded-full bg-white border border-slate-200/70 text-slate-600 flex items-center gap-1.5">
-                        <i data-lucide="award" class="w-3.5 h-3.5 text-teal-500"></i>
-                        15+ Years Experience
-                    </span>
-                    <span
-                        class="text-xs px-3 py-1.5 rounded-full bg-white border border-slate-200/70 text-slate-600 flex items-center gap-1.5">
+                        class="text-xs px-3 py-1.5 rounded-full bg-white border border-slate-200/70 text-slate-600 flex items-center gap-1.5 shadow-sm">
                         <i data-lucide="heart-pulse" class="w-3.5 h-3.5 text-teal-500"></i>
                         Painless Guarantee
                     </span>
@@ -597,8 +731,7 @@
                                 <i data-lucide="clock-3" class="w-5 h-5"></i>
                             </div>
                             <div>
-                                <div class="text-2xl font-display font-semibold text-ink leading-none">45<span
-                                        class="text-base">min</span></div>
+                                <div class="text-2xl font-display font-semibold text-ink leading-none"><span data-count="45" class="stat-counter">45</span><span class="text-base">min</span></div>
                                 <div class="text-xs text-slate-500 mt-0.5">Average visit</div>
                             </div>
                         </div>
@@ -693,11 +826,11 @@
                             </p>
                             <div class="flex gap-8 text-sm">
                                 <div>
-                                    <div class="text-3xl font-display text-white">60<span class="text-teal-300">s</span></div>
+                                    <div class="text-3xl font-display text-white"><span data-count="60" class="stat-counter">60</span><span class="text-teal-300">s</span></div>
                                     <div class="text-slate-400 text-xs uppercase tracking-wider mt-1">Scan time</div>
                                 </div>
                                 <div>
-                                    <div class="text-3xl font-display text-white">0.02<span class="text-teal-300">mm</span></div>
+                                    <div class="text-3xl font-display text-white"><span data-count="0.02" data-decimals="2" class="stat-counter">0.02</span><span class="text-teal-300">mm</span></div>
                                     <div class="text-slate-400 text-xs uppercase tracking-wider mt-1">Precision</div>
                                 </div>
                             </div>
@@ -729,11 +862,11 @@
                             </p>
                             <div class="flex gap-8 text-sm">
                                 <div>
-                                    <div class="text-3xl font-display text-white">7</div>
+                                    <div class="text-3xl font-display text-white"><span data-count="7" class="stat-counter">7</span></div>
                                     <div class="text-slate-400 text-xs uppercase tracking-wider mt-1">Design iterations</div>
                                 </div>
                                 <div>
-                                    <div class="text-3xl font-display text-white">100<span class="text-teal-300">%</span></div>
+                                    <div class="text-3xl font-display text-white"><span data-count="100" class="stat-counter">100</span><span class="text-teal-300">%</span></div>
                                     <div class="text-slate-400 text-xs uppercase tracking-wider mt-1">Preview accuracy</div>
                                 </div>
                             </div>
@@ -764,7 +897,7 @@
                                     <div class="text-slate-400 text-xs uppercase tracking-wider mt-1">Drills used</div>
                                 </div>
                                 <div>
-                                    <div class="text-3xl font-display text-white">99.4<span class="text-teal-300">%</span></div>
+                                    <div class="text-3xl font-display text-white"><span data-count="99.4" data-decimals="1" class="stat-counter">99.4</span><span class="text-teal-300">%</span></div>
                                     <div class="text-slate-400 text-xs uppercase tracking-wider mt-1">Pain-free rate</div>
                                 </div>
                             </div>
@@ -795,7 +928,7 @@
                                     <div class="text-slate-400 text-xs uppercase tracking-wider mt-1">Visit needed</div>
                                 </div>
                                 <div>
-                                    <div class="text-3xl font-display text-white">15<span class="text-teal-300">yr</span></div>
+                                    <div class="text-3xl font-display text-white"><span data-count="15" class="stat-counter">15</span><span class="text-teal-300">yr</span></div>
                                     <div class="text-slate-400 text-xs uppercase tracking-wider mt-1">Warranty</div>
                                 </div>
                             </div>
@@ -928,7 +1061,7 @@
                                 <button id="quiz-book-btn" onclick="bookFromQuiz()"
                                     class="cta-primary w-full text-white text-sm font-semibold px-6 py-3.5 rounded-xl flex items-center justify-center gap-2">
                                     <i data-lucide="calendar-check" class="w-4 h-4"></i>
-                                    <span>Book 3D scan for <span id="quiz-service-name">this treatment</span></span>
+                                    <span>Book Appointment for <span id="quiz-service-name">this treatment</span></span>
                                 </button>
                                 <button onclick="resetQuiz()"
                                     class="mt-3 text-xs text-slate-500 hover:text-ink transition font-medium">
@@ -962,7 +1095,7 @@
             <div class="grid grid-cols-1 md:grid-cols-6 gap-6">
 
                 <!-- Card 1: Veneers (large) -->
-                <div class="tilt md:col-span-4 relative rounded-3xl overflow-hidden group cursor-pointer bg-white border border-slate-100 shadow-lg flex flex-col justify-between"
+                <div class="tilt spotlight-card md:col-span-4 relative rounded-3xl overflow-hidden group cursor-pointer bg-white border border-slate-100 shadow-lg flex flex-col justify-between"
                     data-drawer="veneers">
                     <div class="relative h-72 overflow-hidden">
                         <img src="https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=1200&h=800&fit=crop"
@@ -1003,7 +1136,7 @@
                                     <span class="text-xs text-slate-500">No temporaries · Zero enamel damage</span>
                                     <button onclick="event.stopPropagation(); openModal('Veneers')"
                                         class="cta-primary text-white text-xs font-semibold px-4 py-2 rounded-lg">
-                                        Book Veneers Demo
+                                        Book Appointment
                                     </button>
                                 </div>
                             </div>
@@ -1012,7 +1145,7 @@
                 </div>
 
                 <!-- Card 2: Aligners -->
-                <div class="tilt md:col-span-2 relative rounded-3xl overflow-hidden group cursor-pointer bg-gradient-to-br from-sky-500 to-teal-600 text-white shadow-lg flex flex-col justify-between"
+                <div class="tilt spotlight-card md:col-span-2 relative rounded-3xl overflow-hidden group cursor-pointer bg-gradient-to-br from-sky-500 to-teal-600 text-white shadow-lg flex flex-col justify-between"
                     data-drawer="aligners">
                     <div class="p-8 h-full flex flex-col justify-between">
                         <div>
@@ -1044,7 +1177,7 @@
                                 <p>Includes initial 3D digital simulation, all aligner sets, 2 free refinement rounds, and customized nighttime retainers.</p>
                                 <button onclick="event.stopPropagation(); openModal('Aligners')"
                                     class="w-full mt-2 bg-white text-sky-700 font-semibold py-2 rounded-lg text-xs hover:bg-teal-50 transition">
-                                    Book Aligners Consult
+                                    Book Appointment
                                 </button>
                             </div>
                         </div>
@@ -1052,7 +1185,7 @@
                 </div>
 
                 <!-- Card 3: Implants -->
-                <div class="tilt md:col-span-3 relative rounded-3xl overflow-hidden group cursor-pointer bg-ink text-white shadow-lg flex flex-col justify-between"
+                <div class="tilt spotlight-card md:col-span-3 relative rounded-3xl overflow-hidden group cursor-pointer bg-ink text-white shadow-lg flex flex-col justify-between"
                     data-drawer="implants">
                     <div class="grid grid-cols-1 sm:grid-cols-2 h-full">
                         <div class="p-8 flex flex-col justify-between">
@@ -1083,14 +1216,14 @@
                             <p>3D cone-beam computed tomography (CBCT) navigation ensures exact angle and depth. Minimally invasive surgery with rapid 48-hour recovery.</p>
                             <button onclick="event.stopPropagation(); openModal('Implants')"
                                 class="cta-primary text-white font-semibold px-4 py-2 rounded-lg text-xs">
-                                Book Guided Implant Consult
+                                Book Appointment
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Card 4: Preventive -->
-                <div class="tilt md:col-span-3 relative rounded-3xl overflow-hidden group cursor-pointer bg-white border border-slate-100 shadow-lg flex flex-col justify-between"
+                <div class="tilt spotlight-card md:col-span-3 relative rounded-3xl overflow-hidden group cursor-pointer bg-white border border-slate-100 shadow-lg flex flex-col justify-between"
                     data-drawer="preventive">
                     <div class="grid grid-cols-1 sm:grid-cols-2 h-full">
                         <div class="relative h-56 sm:h-full order-2 sm:order-1">
@@ -1121,7 +1254,7 @@
                             <p>Swiss AirFlow technology removes 100% of dental biofilm, coffee stains, and bacteria gently. Includes remineralizing enamel polish.</p>
                             <button onclick="event.stopPropagation(); openModal('Cleaning')"
                                 class="cta-primary text-white font-semibold px-4 py-2 rounded-lg text-xs">
-                                Book Spa Cleaning
+                                Book Appointment
                             </button>
                         </div>
                     </div>
@@ -1186,7 +1319,7 @@
             <!-- Floating stats -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
                 <div class="glass-dark rounded-2xl p-6 border border-white/10 reveal">
-                    <div class="font-display text-4xl text-white mb-1">99.4<span class="text-teal-300">%</span></div>
+                    <div class="font-display text-4xl text-white mb-1"><span data-count="99.4" data-decimals="1" class="stat-counter">99.4</span><span class="text-teal-300">%</span></div>
                     <div class="text-slate-400 text-sm">Pain-free procedure satisfaction</div>
                 </div>
                 <div class="glass-dark rounded-2xl p-6 border border-white/10 reveal">
@@ -1322,18 +1455,18 @@
                         Ready when <span class="italic text-teal-300">you are.</span>
                     </h2>
                     <p class="text-slate-200 mb-8 text-base md:text-lg leading-relaxed max-w-lg">
-                        Book a complimentary 20-minute consultation and 3D digital scan — zero obligation, no clinical pressure.
+                        Book an appointment and 3D digital scan with Dr. Swamy and our team — zero obligation, no clinical pressure.
                     </p>
                     <div class="flex flex-wrap gap-4">
                         <button onclick="openModal()"
                             class="bg-white text-slate-900 hover:bg-slate-50 font-bold px-7 py-4 rounded-xl text-sm flex items-center gap-2.5 transition shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transform duration-200">
-                            <i data-lucide="calendar" class="w-4 h-4 text-sky-600"></i>
-                            <span>Book demo consultation</span>
+                            <i data-lucide="calendar-check" class="w-4 h-4 text-sky-600"></i>
+                            <span>Book Appointment</span>
                         </button>
-                        <a href="tel:+15551234567"
+                        <a href="tel:+919876543210"
                             class="glass-dark border border-white/30 text-white font-semibold px-6 py-4 rounded-xl text-sm flex items-center gap-2.5 hover:bg-white/20 transition backdrop-blur-md">
                             <i data-lucide="phone" class="w-4 h-4 text-teal-300"></i>
-                            <span>(555) 123-4567</span>
+                            <span>Call Swamy: +91 98765 43210</span>
                         </a>
                     </div>
                 </div>
@@ -1383,8 +1516,14 @@
 
                 <div>
                     <h4 class="font-semibold text-sm mb-4 text-teal-300">Get in touch</h4>
-                    <p class="text-slate-400 text-sm mb-2">(555) 123-4567</p>
-                    <p class="text-slate-400 text-sm mb-4">hello@luminadental.co</p>
+                    <p class="text-slate-300 text-sm mb-1 font-medium flex items-center gap-2">
+                        <i data-lucide="phone" class="w-3.5 h-3.5 text-teal-400"></i>
+                        <span>Swamy: <a href="tel:+919876543210" class="hover:text-white transition underline underline-offset-2">+91 98765 43210</a></span>
+                    </p>
+                    <p class="text-slate-400 text-sm mb-4 flex items-center gap-2">
+                        <i data-lucide="mail" class="w-3.5 h-3.5 text-sky-400"></i>
+                        hello@luminadental.co
+                    </p>
                     <div class="flex gap-3">
                         <a href="#" aria-label="Instagram"
                             class="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 transition">
@@ -1415,13 +1554,13 @@
 
     <!-- Mobile sticky action bar -->
     <div class="lg:hidden fixed bottom-0 left-0 right-0 z-40 glass border-t border-slate-200/50 p-3 flex gap-2">
-        <a href="tel:+15551234567"
-            class="flex-1 border border-slate-200 bg-white/90 text-ink font-semibold py-3 rounded-xl flex items-center justify-center gap-2 text-sm shadow-sm">
-            <i data-lucide="phone" class="w-4 h-4 text-sky-600"></i> Call
+        <a href="tel:+919876543210"
+            class="flex-1 border border-slate-200 bg-white/90 text-ink font-semibold py-3 rounded-xl flex items-center justify-center gap-1.5 text-xs shadow-sm">
+            <i data-lucide="phone" class="w-3.5 h-3.5 text-sky-600"></i> Call Swamy
         </a>
         <button onclick="openModal()"
-            class="flex-1 cta-primary text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 text-sm shadow-md">
-            <i data-lucide="calendar" class="w-4 h-4"></i> Book demo
+            class="flex-1 cta-primary text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-1.5 text-xs shadow-md">
+            <i data-lucide="calendar-check" class="w-3.5 h-3.5"></i> Book Appointment
         </button>
     </div>
 
@@ -1435,9 +1574,9 @@
                 <div>
                     <div class="section-eyebrow mb-2">
                         <i data-lucide="calendar-check" class="w-3.5 h-3.5"></i>
-                        Book demo consultation
+                        Book Appointment
                     </div>
-                    <h3 class="font-display text-2xl md:text-3xl text-ink font-semibold">Let's find your time.</h3>
+                    <h3 class="font-display text-2xl md:text-3xl text-ink font-semibold">Schedule Your Visit</h3>
                 </div>
                 <button onclick="closeModal()" aria-label="Close modal"
                     class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition">
@@ -1491,11 +1630,20 @@
             <!-- Step 2: doctor + date -->
             <div class="modal-step hidden" data-step="2">
                 <p class="font-semibold text-sm mb-3 text-ink">Preferred provider</p>
-                <div class="grid grid-cols-2 gap-3 mb-5">
-                    <div class="doctor-opt rounded-2xl p-3 flex items-center gap-3 selected" data-doctor="Dr. Elise Reeves">
-                        <input type="radio" name="doctor" value="Dr. Elise Reeves" checked class="hidden">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
+                    <div class="doctor-opt rounded-2xl p-3 flex items-center gap-3 selected" data-doctor="Dr. Swamy">
+                        <input type="radio" name="doctor" value="Dr. Swamy" checked class="hidden">
+                        <img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=100&h=100&fit=crop&crop=faces"
+                            class="w-10 h-10 rounded-full object-cover border border-teal-300" alt="Dr. Swamy">
+                        <div>
+                            <div class="text-sm font-semibold text-ink flex items-center gap-1">Dr. Swamy <span class="text-[10px] px-1.5 py-0.5 rounded bg-teal-100 text-teal-800">Lead</span></div>
+                            <div class="text-xs text-slate-500">+91 98765 43210</div>
+                        </div>
+                    </div>
+                    <div class="doctor-opt rounded-2xl p-3 flex items-center gap-3" data-doctor="Dr. Elise Reeves">
+                        <input type="radio" name="doctor" value="Dr. Elise Reeves" class="hidden">
                         <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=100&h=100&fit=crop&crop=faces"
-                            class="w-11 h-11 rounded-full object-cover" alt="Dr. Elise Reeves">
+                            class="w-10 h-10 rounded-full object-cover" alt="Dr. Elise Reeves">
                         <div>
                             <div class="text-sm font-semibold text-ink">Dr. Reeves</div>
                             <div class="text-xs text-slate-500">Cosmetics &amp; Veneers</div>
@@ -1504,7 +1652,7 @@
                     <div class="doctor-opt rounded-2xl p-3 flex items-center gap-3" data-doctor="Dr. Michael Kwan">
                         <input type="radio" name="doctor" value="Dr. Michael Kwan" class="hidden">
                         <img src="https://images.unsplash.com/photo-1622902046580-2b47f47f5471?w=100&h=100&fit=crop&crop=faces"
-                            class="w-11 h-11 rounded-full object-cover" alt="Dr. Michael Kwan">
+                            class="w-10 h-10 rounded-full object-cover" alt="Dr. Michael Kwan">
                         <div>
                             <div class="text-sm font-semibold text-ink">Dr. Kwan</div>
                             <div class="text-xs text-slate-500">Surgical &amp; Implants</div>
@@ -1526,7 +1674,8 @@
 
             <!-- Step 3: contact -->
             <div class="modal-step hidden" data-step="3">
-                <p class="font-semibold text-sm mb-3 text-ink">Your contact information</p>
+                <p class="font-semibold text-sm mb-1 text-ink">Your contact information</p>
+                <p class="text-xs text-slate-500 mb-3">Direct Support Desk: <a href="tel:+919876543210" class="text-sky-600 font-semibold hover:underline">Swamy (+91 98765 43210)</a></p>
 
                 <div class="space-y-3 mb-5">
                     <div>
@@ -1551,7 +1700,7 @@
                     <button onclick="confirmBooking()"
                         class="cta-primary flex-1 text-white font-semibold py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-md">
                         <i data-lucide="check" class="w-4 h-4"></i>
-                        <span>Confirm booking</span>
+                        <span>Confirm Appointment</span>
                     </button>
                 </div>
             </div>
@@ -1581,42 +1730,248 @@
     </div>
 
     <!-- ═══════════════════════════════════════════════════════════
-     SCRIPTS
+     AWARD-WINNING SCROLL & INTERACTION ENGINE
 ═══════════════════════════════════════════════════════════ -->
     <script>
-        // Initialize Icons
+        // Register GSAP Plugins
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Initialize Lucide Icons
         lucide.createIcons();
 
         /* ────────────────────────────────────────────────────────
-           Scroll Reveal
+           1. Lenis Kinetic Smooth Momentum Scrolling
         ──────────────────────────────────────────────────────── */
-        const io = new IntersectionObserver((entries) => {
-            entries.forEach(e => {
-                if (e.isIntersecting) {
-                    e.target.classList.add('on');
-                    io.unobserve(e.target);
+        let lenis;
+        try {
+            lenis = new Lenis({
+                duration: 1.25,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Luxurious exponential ease
+                orientation: 'vertical',
+                gestureOrientation: 'vertical',
+                smoothWheel: true,
+                wheelMultiplier: 0.95,
+                touchMultiplier: 1.5,
+                infinite: false,
+            });
+
+            // Synchronize Lenis with GSAP ScrollTrigger
+            lenis.on('scroll', (e) => {
+                ScrollTrigger.update();
+                updateScrollHUD(e);
+            });
+
+            gsap.ticker.add((time) => {
+                lenis.raf(time * 1000);
+            });
+            gsap.ticker.lagSmoothing(0);
+        } catch (err) {
+            console.warn("Lenis fallback to native smooth scroll", err);
+            window.addEventListener('scroll', () => {
+                updateScrollHUD({ scroll: window.scrollY, limit: document.documentElement.scrollHeight - window.innerHeight });
+            });
+        }
+
+        // Lenis Smooth Scroll To Anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href && href !== '#' && href.length > 1) {
+                    const target = document.querySelector(href);
+                    if (target) {
+                        e.preventDefault();
+                        if (lenis) {
+                            lenis.scrollTo(target, { offset: -85, duration: 1.2 });
+                        } else {
+                            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    }
                 }
             });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+        });
+
+        function lenisScrollToTop() {
+            if (lenis) {
+                lenis.scrollTo(0, { duration: 1.4 });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
 
         /* ────────────────────────────────────────────────────────
-           Floating Orbs GSAP
+           2. Scroll Progress HUD & Top Circular Indicator
         ──────────────────────────────────────────────────────── */
-        gsap.to('.float-1', { y: 40, x: -20, duration: 6, repeat: -1, yoyo: true, ease: 'sine.inOut' });
-        gsap.to('.float-2', { y: -30, x: 20, duration: 7, repeat: -1, yoyo: true, ease: 'sine.inOut' });
-        gsap.to('.float-3', { y: -14, duration: 3.5, repeat: -1, yoyo: true, ease: 'sine.inOut' });
-        gsap.to('.float-4', { y: 10, duration: 4, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+        const progressBar = document.getElementById('scroll-progress-bar');
+        const scrollToTopBtn = document.getElementById('scroll-to-top');
+        const circleProgress = document.getElementById('scroll-circle-progress');
+        const maxCircumference = 97.4; // 2 * PI * 15.5
+
+        function updateScrollHUD(e) {
+            const scroll = e.scroll !== undefined ? e.scroll : window.scrollY;
+            const maxScroll = e.limit !== undefined ? e.limit : (document.documentElement.scrollHeight - window.innerHeight);
+            const progress = maxScroll > 0 ? Math.min(1, Math.max(0, scroll / maxScroll)) : 0;
+
+            // Update top line progress bar
+            if (progressBar) {
+                progressBar.style.width = (progress * 100) + '%';
+            }
+
+            // Update circular progress & scroll-to-top button visibility
+            if (scrollToTopBtn && circleProgress) {
+                if (scroll > 350) {
+                    scrollToTopBtn.style.opacity = '1';
+                    scrollToTopBtn.style.pointerEvents = 'auto';
+                    scrollToTopBtn.style.transform = 'translateY(0)';
+                } else {
+                    scrollToTopBtn.style.opacity = '0';
+                    scrollToTopBtn.style.pointerEvents = 'none';
+                    scrollToTopBtn.style.transform = 'translateY(16px)';
+                }
+                const offset = maxCircumference - (progress * maxCircumference);
+                circleProgress.style.strokeDashoffset = offset;
+            }
+
+            // Navbar backdrop & shadow enhancement
+            const nav = document.getElementById('navbar');
+            if (nav) {
+                const navGlass = nav.querySelector('.glass');
+                if (scroll > 25) {
+                    navGlass.classList.add('shadow-xl', 'bg-white/90');
+                    navGlass.classList.remove('bg-white/75');
+                } else {
+                    navGlass.classList.remove('shadow-xl', 'bg-white/90');
+                    navGlass.classList.add('bg-white/75');
+                }
+            }
+        }
 
         /* ────────────────────────────────────────────────────────
-           Patient Journey — Responsive GSAP Horizontal Scroll
+           3. Award-Winning Stagger & Entrance Scroll Reveals
         ──────────────────────────────────────────────────────── */
-        gsap.registerPlugin(ScrollTrigger);
+        // Smooth Intersection Observer for base reveals
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed', 'on');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // GSAP ScrollTrigger Enhanced Batch Stagger
+        ScrollTrigger.batch(".reveal", {
+            interval: 0.1,
+            batchMax: 3,
+            onEnter: batch => gsap.to(batch, {
+                opacity: 1,
+                y: 0,
+                duration: 0.9,
+                stagger: 0.12,
+                ease: "power3.out",
+                overwrite: "auto"
+            }),
+            once: true
+        });
+
+        /* ────────────────────────────────────────────────────────
+           4. Hero Parallax & Multi-layer Depth Layers
+        ──────────────────────────────────────────────────────── */
+        gsap.to('.aurora', {
+            yPercent: 30,
+            scale: 1.15,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: 'section:first-of-type',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 1.2
+            }
+        });
+
+        gsap.to('.hero-visual', {
+            y: 35,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: 'section:first-of-type',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 1
+            }
+        });
+
+        // Dynamic 3D Floating Orbs
+        gsap.to('.float-1', { y: 45, x: -25, rotation: 10, duration: 6.5, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+        gsap.to('.float-2', { y: -35, x: 25, rotation: -8, duration: 7.5, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+        gsap.to('.float-3', { y: -16, x: 6, duration: 4, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+        gsap.to('.float-4', { y: 14, x: -8, duration: 4.5, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+
+        /* ────────────────────────────────────────────────────────
+           5. Interactive Bento 3D Spotlight Glow Cursor Effect
+        ──────────────────────────────────────────────────────── */
+        document.querySelectorAll('.spotlight-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', x + 'px');
+                card.style.setProperty('--mouse-y', y + 'px');
+            });
+        });
+
+        // 3D Tilt Effect on Cards
+        document.querySelectorAll('.tilt').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const rx = ((y / rect.height) - 0.5) * -7;
+                const ry = ((x / rect.width) - 0.5) * 7;
+                card.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0)';
+            });
+        });
+
+        /* ────────────────────────────────────────────────────────
+           6. Scroll-Triggered Dynamic Number Counters
+        ──────────────────────────────────────────────────────── */
+        document.querySelectorAll('.stat-counter').forEach(counter => {
+            const targetVal = parseFloat(counter.getAttribute('data-count'));
+            const decimals = parseInt(counter.getAttribute('data-decimals') || '0', 10);
+
+            if (!isNaN(targetVal)) {
+                ScrollTrigger.create({
+                    trigger: counter,
+                    start: 'top 88%',
+                    once: true,
+                    onEnter: () => {
+                        const obj = { val: 0 };
+                        gsap.to(obj, {
+                            val: targetVal,
+                            duration: 1.8,
+                            ease: 'power2.out',
+                            onUpdate: () => {
+                                counter.textContent = decimals > 0 
+                                    ? obj.val.toFixed(decimals) 
+                                    : Math.round(obj.val).toString();
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+        /* ────────────────────────────────────────────────────────
+           7. Patient Journey — Responsive Horizontal Scrub
+        ──────────────────────────────────────────────────────── */
         const track = document.getElementById('journey-track');
         const outer = document.getElementById('journey-outer');
         const panels = document.querySelectorAll('.journey-panel');
-        const progressBar = document.getElementById('progress-bar');
+        const journeyProgressBar = document.getElementById('progress-bar');
         const progressNum = document.getElementById('progress-num');
         const progressPill = document.getElementById('journey-progress');
 
@@ -1637,7 +1992,7 @@
                     invalidateOnRefresh: true,
                     onUpdate: (self) => {
                         const p = self.progress;
-                        if (progressBar) progressBar.style.width = (p * 100) + '%';
+                        if (journeyProgressBar) journeyProgressBar.style.width = (p * 100) + '%';
                         const idx = Math.min(panels.length, Math.floor(p * panels.length) + 1);
                         if (progressNum) progressNum.textContent = String(idx).padStart(2, '0');
                     },
@@ -1654,17 +2009,123 @@
         });
 
         /* ────────────────────────────────────────────────────────
-           Navbar Scroll Shadow & Mobile Menu
+           8. Before/After Interactive Slider with Auto-Peek Animation
         ──────────────────────────────────────────────────────── */
-        const nav = document.getElementById('navbar');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 20) {
-                nav.querySelector('.glass').classList.add('shadow-2xl');
-            } else {
-                nav.querySelector('.glass').classList.remove('shadow-2xl');
+        const ba = document.getElementById('ba-slider');
+        const baAfter = ba ? ba.querySelector('.ba-after') : null;
+        const baHandle = document.getElementById('ba-handle');
+        let dragging = false;
+
+        function setBA(pct) {
+            if (!baAfter || !baHandle) return;
+            pct = Math.max(0, Math.min(100, pct));
+            baAfter.style.clipPath = `inset(0 0 0 ${pct}%)`;
+            baHandle.style.left = pct + '%';
+        }
+        setBA(50);
+
+        function updateSliderPosition(clientX) {
+            if (!ba) return;
+            const rect = ba.getBoundingClientRect();
+            const x = clientX - rect.left;
+            const pct = (x / rect.width) * 100;
+            setBA(pct);
+        }
+
+        if (ba) {
+            ba.addEventListener('pointerdown', (e) => {
+                dragging = true;
+                ba.setPointerCapture(e.pointerId);
+                updateSliderPosition(e.clientX);
+            });
+
+            ba.addEventListener('pointermove', (e) => {
+                if (!dragging) return;
+                updateSliderPosition(e.clientX);
+            });
+
+            ba.addEventListener('pointerup', (e) => {
+                dragging = false;
+                try { ba.releasePointerCapture(e.pointerId); } catch(err){}
+            });
+
+            ba.addEventListener('pointercancel', () => { dragging = false; });
+
+            // Auto-peek tease when scrolling into view
+            ScrollTrigger.create({
+                trigger: '#transformation',
+                start: 'top 70%',
+                once: true,
+                onEnter: () => {
+                    const peekObj = { pct: 50 };
+                    gsap.timeline({ delay: 0.3 })
+                        .to(peekObj, {
+                            pct: 36,
+                            duration: 0.7,
+                            ease: 'power2.out',
+                            onUpdate: () => setBA(peekObj.pct)
+                        })
+                        .to(peekObj, {
+                            pct: 64,
+                            duration: 0.9,
+                            ease: 'power2.inOut',
+                            onUpdate: () => setBA(peekObj.pct)
+                        })
+                        .to(peekObj, {
+                            pct: 50,
+                            duration: 0.6,
+                            ease: 'power2.out',
+                            onUpdate: () => setBA(peekObj.pct)
+                        });
+                }
+            });
+        }
+
+        /* ────────────────────────────────────────────────────────
+           9. Clinic Tour & Parallax Video Section
+        ──────────────────────────────────────────────────────── */
+        gsap.to('#tour video', {
+            scale: 1.06,
+            yPercent: 8,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: '#tour',
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: 1.5
             }
         });
 
+        /* ────────────────────────────────────────────────────────
+           10. Service Bento Accordion Drawers
+        ──────────────────────────────────────────────────────── */
+        document.querySelectorAll('[data-drawer]').forEach(el => {
+            el.addEventListener('click', (e) => {
+                const drawer = el.querySelector('.drawer-content');
+                const icon = el.querySelector('.drawer-icon');
+                if (drawer) {
+                    const isOpen = drawer.classList.contains('open');
+                    document.querySelectorAll('.drawer-content.open').forEach(d => {
+                        if (d !== drawer) {
+                            d.classList.remove('open');
+                            const parent = d.closest('[data-drawer]');
+                            if (parent) {
+                                const ico = parent.querySelector('.drawer-icon');
+                                if (ico) ico.style.transform = '';
+                            }
+                        }
+                    });
+
+                    drawer.classList.toggle('open');
+                    if (icon) icon.style.transform = !isOpen ? 'rotate(180deg)' : '';
+                    if (lenis) lenis.resize();
+                }
+            });
+        });
+
+        /* ────────────────────────────────────────────────────────
+           11. Mobile Drawer Navigation
+        ──────────────────────────────────────────────────────── */
         const mobileMenu = document.getElementById('mobile-menu');
         const hamburgerIcon = document.getElementById('hamburger-icon');
 
@@ -1682,104 +2143,21 @@
             lucide.createIcons();
         }
 
-        /* ────────────────────────────────────────────────────────
-           Hero Tour Video Scroll Helper
-        ──────────────────────────────────────────────────────── */
         function scrollToTour() {
             const tourSec = document.getElementById('tour');
             if (tourSec) {
-                tourSec.scrollIntoView({ behavior: 'smooth' });
+                if (lenis) {
+                    lenis.scrollTo(tourSec, { offset: -60, duration: 1.2 });
+                } else {
+                    tourSec.scrollIntoView({ behavior: 'smooth' });
+                }
                 const vid = document.getElementById('tour-video');
                 if (vid) vid.play().catch(() => {});
             }
         }
 
         /* ────────────────────────────────────────────────────────
-           Before/After Slider (Smooth Pointer / Touch handling)
-        ──────────────────────────────────────────────────────── */
-        const ba = document.getElementById('ba-slider');
-        const baAfter = ba.querySelector('.ba-after');
-        const baHandle = document.getElementById('ba-handle');
-        let dragging = false;
-
-        function setBA(pct) {
-            pct = Math.max(0, Math.min(100, pct));
-            baAfter.style.clipPath = `inset(0 0 0 ${pct}%)`;
-            baHandle.style.left = pct + '%';
-        }
-        setBA(50);
-
-        function updateSliderPosition(clientX) {
-            const rect = ba.getBoundingClientRect();
-            const x = clientX - rect.left;
-            const pct = (x / rect.width) * 100;
-            setBA(pct);
-        }
-
-        ba.addEventListener('pointerdown', (e) => {
-            dragging = true;
-            ba.setPointerCapture(e.pointerId);
-            updateSliderPosition(e.clientX);
-        });
-
-        ba.addEventListener('pointermove', (e) => {
-            if (!dragging) return;
-            updateSliderPosition(e.clientX);
-        });
-
-        ba.addEventListener('pointerup', (e) => {
-            dragging = false;
-            try { ba.releasePointerCapture(e.pointerId); } catch(err){}
-        });
-
-        ba.addEventListener('pointercancel', () => { dragging = false; });
-
-        /* ────────────────────────────────────────────────────────
-           Bento 3D Tilt
-        ──────────────────────────────────────────────────────── */
-        document.querySelectorAll('.tilt').forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                const rx = ((y / rect.height) - 0.5) * -6;
-                const ry = ((x / rect.width) - 0.5) * 6;
-                card.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
-            });
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
-            });
-        });
-
-        /* ────────────────────────────────────────────────────────
-           Service Bento Accordion Drawers
-        ──────────────────────────────────────────────────────── */
-        document.querySelectorAll('[data-drawer]').forEach(el => {
-            el.addEventListener('click', (e) => {
-                const drawer = el.querySelector('.drawer-content');
-                const icon = el.querySelector('.drawer-icon');
-                if (drawer) {
-                    const isOpen = drawer.classList.contains('open');
-                    // Close other open drawers
-                    document.querySelectorAll('.drawer-content.open').forEach(d => {
-                        if (d !== drawer) {
-                            d.classList.remove('open');
-                            const parent = d.closest('[data-drawer]');
-                            if (parent) {
-                                const ico = parent.querySelector('.drawer-icon');
-                                if (ico) ico.style.transform = '';
-                            }
-                        }
-                    });
-
-                    drawer.classList.toggle('open');
-                    if (icon) icon.style.transform = !isOpen ? 'rotate(180deg)' : '';
-                }
-            });
-        });
-
-        /* ────────────────────────────────────────────────────────
-           Smile Assessment Quiz
+           12. Smile Assessment Quiz
         ──────────────────────────────────────────────────────── */
         let currentQuizGoal = 'Veneers';
 
@@ -1797,6 +2175,7 @@
                     document.getElementById('quiz-timeline').textContent = timeline.split(' · ')[0];
                     document.getElementById('quiz-goal-label').textContent = timeline.split(' · ')[1] || '';
                     document.getElementById('quiz-service-name').textContent = currentQuizGoal;
+                    if (lenis) lenis.resize();
                 }, 350);
             });
         });
@@ -1806,11 +2185,18 @@
             document.getElementById('quiz-step-2').classList.add('hidden');
             document.getElementById('quiz-step').textContent = '1';
             document.querySelectorAll('#quiz-step-1 .quiz-opt').forEach(o => o.classList.remove('selected'));
+            if (lenis) lenis.resize();
         }
 
         function openQuiz() {
             const el = document.getElementById('transformation');
-            if (el) el.scrollIntoView({ behavior: 'smooth' });
+            if (el) {
+                if (lenis) {
+                    lenis.scrollTo(el, { offset: -60, duration: 1.2 });
+                } else {
+                    el.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
         }
 
         function bookFromQuiz() {
@@ -1818,7 +2204,7 @@
         }
 
         /* ────────────────────────────────────────────────────────
-           Ambient Audio & Tour Video Sound
+           13. Ambient Audio & Tour Video Sound
         ──────────────────────────────────────────────────────── */
         let audioCtx = null;
         let ambientGain = null;
@@ -1830,13 +2216,11 @@
             const soundIcon = document.getElementById('sound-icon');
 
             if (!isAudioPlaying) {
-                // Unmute video
                 if (video) {
                     video.muted = false;
                     video.volume = 0.8;
                 }
 
-                // Web Audio Spa Tone generator (432Hz ambient chord)
                 try {
                     const AudioContext = window.AudioContext || window.webkitAudioContext;
                     if (!audioCtx) audioCtx = new AudioContext();
@@ -1871,13 +2255,12 @@
         }
 
         /* ────────────────────────────────────────────────────────
-           Multi-Step Booking Modal & Validation
+           14. Multi-Step Booking Modal & Validation
         ──────────────────────────────────────────────────────── */
         const modal = document.getElementById('modal');
         let selectedService = 'Veneers';
-        let selectedDoctor = 'Dr. Elise Reeves';
+        let selectedDoctor = 'Dr. Swamy';
 
-        // Set default minimum booking date to today
         const dateInput = document.getElementById('booking-date');
         if (dateInput) {
             const today = new Date().toISOString().split('T')[0];
@@ -1898,31 +2281,32 @@
 
             modal.classList.add('open');
             document.body.style.overflow = 'hidden';
+            if (lenis) lenis.stop();
         }
 
         function closeModal() {
             modal.classList.remove('open');
             document.body.style.overflow = '';
+            if (lenis) lenis.start();
             setTimeout(() => {
                 document.querySelectorAll('.modal-step').forEach(s => s.classList.add('hidden'));
                 const step1 = document.querySelector('.modal-step[data-step="1"]');
                 if (step1) step1.classList.remove('hidden');
                 document.getElementById('modal-progress').style.width = '33%';
                 document.getElementById('modal-step-num').textContent = '1';
-                document.getElementById('form-error').classList.add('hidden');
+                const err = document.getElementById('form-error');
+                if (err) err.classList.add('hidden');
             }, 300);
         }
 
         modal.addEventListener('click', closeModal);
 
-        // Escape Key Modal Listener
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && modal.classList.contains('open')) {
                 closeModal();
             }
         });
 
-        // Step 1 service selection
         document.querySelectorAll('.modal-opt').forEach(opt => {
             opt.addEventListener('click', () => {
                 document.querySelectorAll('.modal-opt').forEach(o => o.classList.remove('selected'));
@@ -1933,7 +2317,6 @@
             });
         });
 
-        // Step 2 doctor selection
         document.querySelectorAll('.doctor-opt').forEach(opt => {
             opt.addEventListener('click', () => {
                 document.querySelectorAll('.doctor-opt').forEach(o => o.classList.remove('selected'));
@@ -1964,13 +2347,14 @@
             const errorEl = document.getElementById('form-error');
 
             if (!name || !email || !phone) {
-                errorEl.textContent = "Please provide your name, email, and phone number.";
-                errorEl.classList.remove('hidden');
+                if (errorEl) {
+                    errorEl.textContent = "Please provide your name, email, and phone number.";
+                    errorEl.classList.remove('hidden');
+                }
                 return;
             }
-            errorEl.classList.add('hidden');
+            if (errorEl) errorEl.classList.add('hidden');
 
-            // Format receipt
             const receipt = document.getElementById('booking-receipt');
             if (receipt) {
                 receipt.innerHTML = `
@@ -1979,11 +2363,15 @@
                         <span class="font-semibold text-ink">${name}</span>
                     </div>
                     <div class="flex justify-between border-b border-sky-200/50 pb-1.5 font-medium">
-                        <span class="text-slate-500">Service:</span>
+                        <span class="text-slate-500">Phone:</span>
+                        <span class="font-semibold text-ink">${phone}</span>
+                    </div>
+                    <div class="flex justify-between border-b border-sky-200/50 pb-1.5 font-medium">
+                        <span class="text-slate-500">Treatment:</span>
                         <span class="font-semibold text-sky-700">${selectedService}</span>
                     </div>
                     <div class="flex justify-between border-b border-sky-200/50 pb-1.5 font-medium">
-                        <span class="text-slate-500">Provider:</span>
+                        <span class="text-slate-500">Selected Provider:</span>
                         <span class="font-semibold text-teal-700">${selectedDoctor}</span>
                     </div>
                     <div class="flex justify-between font-medium">
@@ -1994,11 +2382,11 @@
             }
 
             document.querySelectorAll('.modal-step').forEach(s => s.classList.add('hidden'));
-            document.querySelector('.modal-step[data-step="4"]').classList.remove('hidden');
+            const confirmationStep = document.querySelector('.modal-step[data-step="4"]');
+            if (confirmationStep) confirmationStep.classList.remove('hidden');
             document.getElementById('modal-progress').style.width = '100%';
         }
     </script>
 
 </body>
-
 </html>
