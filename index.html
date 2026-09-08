@@ -1,0 +1,2004 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lumina Dental Studio — Dentistry Reimagined</title>
+
+    <!-- Tailwind + fonts + libs -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['Fraunces', 'serif'],
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        ink: '#0A1128',
+                        mist: '#F8FAFC',
+                        pearl: '#F0F9FF',
+                        warm: '#FFF7ED',
+                        gold: '#F59E0B',
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #0A1128;
+            background: #FFFFFF;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .font-display {
+            font-family: 'Fraunces', serif;
+            font-variation-settings: 'opsz' 96;
+        }
+
+        /* Utility: soft glass */
+        .glass {
+            background: rgba(255, 255, 255, 0.78);
+            backdrop-filter: saturate(140%) blur(18px);
+            -webkit-backdrop-filter: saturate(140%) blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .glass-dark {
+            background: rgba(10, 17, 40, 0.6);
+            backdrop-filter: saturate(140%) blur(16px);
+            -webkit-backdrop-filter: saturate(140%) blur(16px);
+        }
+
+        /* Aurora background for hero */
+        .aurora {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(60% 45% at 15% 25%, rgba(14, 165, 233, 0.35) 0%, transparent 60%),
+                radial-gradient(50% 40% at 85% 15%, rgba(20, 184, 166, 0.30) 0%, transparent 60%),
+                radial-gradient(70% 55% at 60% 85%, rgba(56, 189, 248, 0.22) 0%, transparent 60%);
+            filter: blur(30px);
+        }
+
+        .noise::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='2'/><feColorMatrix values='0 0 0 0 0.05  0 0 0 0 0.10  0 0 0 0 0.20  0 0 0 0.08 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+            opacity: 0.35;
+            pointer-events: none;
+            mix-blend-mode: multiply;
+        }
+
+        /* CTA glow */
+        .cta-primary {
+            background: linear-gradient(135deg, #0EA5E9, #06B6D4 60%, #14B8A6);
+            box-shadow:
+                0 8px 24px -6px rgba(14, 165, 233, 0.55),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            transition: transform .35s cubic-bezier(.2, .7, .2, 1), box-shadow .35s;
+        }
+
+        .cta-primary:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 18px 40px -10px rgba(14, 165, 233, 0.7),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        }
+
+        .cta-ghost {
+            border: 1px solid rgba(10, 17, 40, 0.12);
+            transition: all .3s ease;
+        }
+
+        .cta-ghost:hover {
+            background: #0A1128;
+            color: white;
+            border-color: #0A1128;
+        }
+
+        /* Live pulse */
+        @keyframes pulse-ring {
+            0% {
+                box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.55);
+            }
+
+            70% {
+                box-shadow: 0 0 0 14px rgba(20, 184, 166, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(20, 184, 166, 0);
+            }
+        }
+
+        .pulse-dot {
+            animation: pulse-ring 1.8s infinite;
+        }
+
+        /* Journey: responsive layout */
+        .journey-track {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        .journey-panel {
+            width: 100%;
+            min-height: auto;
+            padding: 2rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (min-width: 1024px) {
+            .journey-track {
+                flex-direction: row;
+                gap: 0;
+            }
+
+            .journey-panel {
+                flex: 0 0 100vw;
+                height: 100vh;
+                padding: 0;
+            }
+        }
+
+        /* Bento tilt */
+        .tilt {
+            transition: transform .5s cubic-bezier(.2, .7, .2, 1), box-shadow .5s;
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        /* Before/After slider */
+        .ba-wrap {
+            position: relative;
+            user-select: none;
+            overflow: hidden;
+            touch-action: none;
+            cursor: ew-resize;
+        }
+
+        .ba-after {
+            position: absolute;
+            inset: 0;
+            clip-path: inset(0 0 0 50%);
+            transition: none;
+        }
+
+        .ba-handle {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 3px;
+            background: white;
+            box-shadow: 0 0 0 1px rgba(10, 17, 40, 0.15), 0 6px 24px rgba(0, 0, 0, 0.25);
+            cursor: ew-resize;
+            transform: translateX(-50%);
+            pointer-events: none;
+        }
+
+        .ba-handle::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 52px;
+            height: 52px;
+            border-radius: 999px;
+            background: white;
+            box-shadow: 0 12px 40px rgba(10, 17, 40, 0.25);
+        }
+
+        .ba-handle::after {
+            content: "⟷";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+            color: #0EA5E9;
+            font-weight: 700;
+        }
+
+        /* Marquee for insurance */
+        @keyframes slide-left {
+            from {
+                transform: translateX(0);
+            }
+
+            to {
+                transform: translateX(-50%);
+            }
+        }
+
+        .marquee {
+            display: flex;
+            animation: slide-left 30s linear infinite;
+        }
+
+        /* Scroll reveal utility */
+        .reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: all 0.8s cubic-bezier(.2, .7, .2, 1);
+        }
+
+        .reveal.on {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Section divider */
+        .section-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            background: #F0F9FF;
+            color: #0369A1;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 17, 40, 0.65);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-card {
+            background: white;
+            border-radius: 24px;
+            max-width: 580px;
+            width: 100%;
+            box-shadow: 0 40px 80px -20px rgba(10, 17, 40, 0.35);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* Selectable Options */
+        .quiz-opt,
+        .modal-opt,
+        .doctor-opt {
+            border: 1.5px solid rgba(10, 17, 40, 0.08);
+            transition: all .25s ease;
+            cursor: pointer;
+        }
+
+        .quiz-opt:hover,
+        .modal-opt:hover,
+        .doctor-opt:hover {
+            border-color: #0EA5E9;
+            background: #F0F9FF;
+            transform: translateY(-2px);
+        }
+
+        .quiz-opt.selected,
+        .modal-opt.selected,
+        .doctor-opt.selected {
+            border-color: #14B8A6 !important;
+            background: linear-gradient(135deg, #F0F9FF, #ECFEFF) !important;
+            box-shadow: 0 8px 24px -8px rgba(20, 184, 166, 0.4);
+        }
+
+        /* Service drawer */
+        .drawer-content {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+        }
+
+        .drawer-content.open {
+            max-height: 500px;
+            opacity: 1;
+        }
+
+        /* Underline nav link */
+        .nav-link {
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -4px;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #0EA5E9, #14B8A6);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform .35s ease;
+        }
+
+        .nav-link:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        /* Mobile drawer navigation */
+        #mobile-menu {
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-origin: top center;
+        }
+
+        #mobile-menu.menu-closed {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.96) translateY(-10px);
+        }
+
+        #mobile-menu.menu-open {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1) translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ═══════════════════════════════════════════════════════════
+     NAV
+═══════════════════════════════════════════════════════════ -->
+    <nav id="navbar" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-1.5rem)] max-w-6xl">
+        <div class="glass rounded-2xl px-5 py-3 flex items-center justify-between shadow-lg shadow-sky-500/5 transition-shadow">
+
+            <!-- Brand -->
+            <a href="#" class="flex items-center gap-2 group">
+                <svg width="34" height="34" viewBox="0 0 40 40" fill="none">
+                    <defs>
+                        <linearGradient id="brand-grad" x1="0" y1="0" x2="40" y2="40">
+                            <stop offset="0%" stop-color="#0EA5E9" />
+                            <stop offset="100%" stop-color="#14B8A6" />
+                        </linearGradient>
+                    </defs>
+                    <path
+                        d="M20 4 C11 4 6 10 6 18 c0 5 2 9 4 14 c1 2 3 4 5 4 c2 0 3-2 3-5 v-6 c0-1 1-2 2-2 s2 1 2 2 v6 c0 3 1 5 3 5 c2 0 4-2 5-4 c2-5 4-9 4-14 c0-8-5-14-14-14 z"
+                        fill="url(#brand-grad)" />
+                    <circle cx="28" cy="12" r="2" fill="white" />
+                    <circle cx="28" cy="12" r="4" fill="white" opacity="0.3" />
+                </svg>
+                <span class="font-display text-2xl font-medium tracking-tight">Lumina<span
+                        class="text-sky-600">.</span></span>
+            </a>
+
+            <!-- Desktop Links -->
+            <div class="hidden lg:flex items-center gap-8 text-sm font-medium text-slate-700">
+                <a href="#services" class="nav-link">Services</a>
+                <a href="#journey" class="nav-link">Patient Journey</a>
+                <a href="#transformation" class="nav-link">Results</a>
+                <a href="#tour" class="nav-link">Clinic Tour</a>
+                <a href="#reviews" class="nav-link">Reviews</a>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-2">
+                <button onclick="openModal()"
+                    class="cta-primary text-white text-sm font-semibold px-5 py-2.5 rounded-xl flex items-center gap-2">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    <span>Book Demo</span>
+                </button>
+
+                <!-- Mobile Hamburger Toggle -->
+                <button id="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Open Navigation Menu"
+                    class="lg:hidden w-10 h-10 rounded-xl glass flex items-center justify-center text-slate-700 hover:text-ink">
+                    <i id="hamburger-icon" data-lucide="menu" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu"
+            class="menu-closed lg:hidden mt-2 glass rounded-2xl p-5 shadow-2xl border border-white/60 flex flex-col gap-3">
+            <a href="#services" onclick="toggleMobileMenu()"
+                class="py-2.5 px-3 rounded-xl text-slate-800 font-medium hover:bg-sky-50 transition flex items-center justify-between">
+                <span>Services</span>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+            </a>
+            <a href="#journey" onclick="toggleMobileMenu()"
+                class="py-2.5 px-3 rounded-xl text-slate-800 font-medium hover:bg-sky-50 transition flex items-center justify-between">
+                <span>Patient Journey</span>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+            </a>
+            <a href="#transformation" onclick="toggleMobileMenu()"
+                class="py-2.5 px-3 rounded-xl text-slate-800 font-medium hover:bg-sky-50 transition flex items-center justify-between">
+                <span>Results &amp; Smile Assessment</span>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+            </a>
+            <a href="#tour" onclick="toggleMobileMenu()"
+                class="py-2.5 px-3 rounded-xl text-slate-800 font-medium hover:bg-sky-50 transition flex items-center justify-between">
+                <span>Clinic Tour</span>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+            </a>
+            <a href="#reviews" onclick="toggleMobileMenu()"
+                class="py-2.5 px-3 rounded-xl text-slate-800 font-medium hover:bg-sky-50 transition flex items-center justify-between">
+                <span>Verified Reviews</span>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+            </a>
+            <div class="pt-3 border-t border-slate-100 flex gap-2">
+                <a href="tel:+15551234567"
+                    class="flex-1 text-center py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700">
+                    Call Studio
+                </a>
+                <button onclick="toggleMobileMenu(); openModal();"
+                    class="flex-1 text-center py-2.5 rounded-xl cta-primary text-sm font-semibold text-white">
+                    Book Consult
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ═══════════════════════════════════════════════════════════
+     HERO
+═══════════════════════════════════════════════════════════ -->
+    <section class="relative min-h-screen overflow-hidden bg-white noise">
+        <div class="aurora"></div>
+
+        <!-- Floating orbs -->
+        <div
+            class="absolute top-1/4 right-16 w-64 h-64 rounded-full bg-gradient-to-br from-sky-200/40 to-teal-200/40 blur-3xl float-1">
+        </div>
+        <div
+            class="absolute bottom-1/4 left-16 w-48 h-48 rounded-full bg-gradient-to-br from-cyan-200/40 to-sky-200/30 blur-3xl float-2">
+        </div>
+
+        <div class="relative max-w-7xl mx-auto px-6 pt-36 pb-20 grid lg:grid-cols-12 gap-12 items-center">
+
+            <!-- Left: copy -->
+            <div class="lg:col-span-6 relative z-10">
+                <div class="section-eyebrow mb-6 reveal">
+                    <span class="w-2 h-2 rounded-full bg-teal-500 pulse-dot"></span>
+                    Now accepting new patients
+                </div>
+
+                <h1 class="font-display text-5xl md:text-6xl lg:text-7xl leading-[1.02] tracking-tight text-ink reveal">
+                    Dentistry, <br />
+                    <span class="italic font-light text-sky-700">reimagined</span> with
+                    <br />precision &amp; comfort.
+                </h1>
+
+                <p class="mt-7 text-lg text-slate-600 max-w-lg leading-relaxed reveal">
+                    Same-day porcelain, AI-guided implants, and painless laser care — inside a studio designed to feel
+                    more spa than clinic.
+                </p>
+
+                <!-- CTAs -->
+                <div class="mt-9 flex flex-wrap gap-3 reveal">
+                    <button onclick="openQuiz()"
+                        class="cta-primary text-white text-sm font-semibold px-6 py-3.5 rounded-xl flex items-center gap-2">
+                        <i data-lucide="scan-face" class="w-4 h-4"></i>
+                        Try Virtual Smile Assessment
+                    </button>
+                    <a href="#services"
+                        class="cta-ghost text-sm font-semibold px-6 py-3.5 rounded-xl flex items-center gap-2 text-ink">
+                        Explore treatments
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+
+                <!-- Social proof -->
+                <div class="mt-10 flex items-center gap-5 reveal">
+                    <div class="flex -space-x-3">
+                        <img class="w-10 h-10 rounded-full border-2 border-white object-cover"
+                            src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&h=80&fit=crop&crop=faces"
+                            alt="Patient">
+                        <img class="w-10 h-10 rounded-full border-2 border-white object-cover"
+                            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=faces"
+                            alt="Patient">
+                        <img class="w-10 h-10 rounded-full border-2 border-white object-cover"
+                            src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=80&h=80&fit=crop&crop=faces"
+                            alt="Patient">
+                        <img class="w-10 h-10 rounded-full border-2 border-white object-cover"
+                            src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80&h=80&fit=crop&crop=faces"
+                            alt="Patient">
+                    </div>
+                    <div class="flex flex-col">
+                        <div class="flex items-center gap-1 text-amber-500">
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <span class="ml-2 text-sm font-semibold text-ink">4.9</span>
+                        </div>
+                        <span class="text-xs text-slate-500 mt-0.5">From 800+ verified patient reviews</span>
+                    </div>
+                </div>
+
+                <!-- Trust badges -->
+                <div class="mt-8 flex flex-wrap gap-2 reveal">
+                    <span
+                        class="text-xs px-3 py-1.5 rounded-full bg-white border border-slate-200/70 text-slate-600 flex items-center gap-1.5">
+                        <i data-lucide="shield-check" class="w-3.5 h-3.5 text-teal-500"></i>
+                        ISO 9001 Certified
+                    </span>
+                    <span
+                        class="text-xs px-3 py-1.5 rounded-full bg-white border border-slate-200/70 text-slate-600 flex items-center gap-1.5">
+                        <i data-lucide="award" class="w-3.5 h-3.5 text-teal-500"></i>
+                        15+ Years Experience
+                    </span>
+                    <span
+                        class="text-xs px-3 py-1.5 rounded-full bg-white border border-slate-200/70 text-slate-600 flex items-center gap-1.5">
+                        <i data-lucide="heart-pulse" class="w-3.5 h-3.5 text-teal-500"></i>
+                        Painless Guarantee
+                    </span>
+                </div>
+            </div>
+
+            <!-- Right: hero visual -->
+            <div class="lg:col-span-6 relative">
+                <!-- Main image card with parallax -->
+                <div class="relative hero-visual">
+                    <div class="relative rounded-[2.5rem] overflow-hidden shadow-2xl shadow-sky-500/20">
+                        <img src="https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=900&h=1100&fit=crop"
+                            alt="Happy patient with radiant smile" class="w-full h-[560px] lg:h-[640px] object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-ink/40 via-transparent to-transparent"></div>
+                    </div>
+
+                    <!-- Floating card: Live procedure -->
+                    <div class="absolute -left-6 top-14 glass rounded-2xl p-4 shadow-xl float-3 w-64 hidden md:block">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="w-2 h-2 rounded-full bg-teal-500 pulse-dot"></div>
+                            <span class="text-xs font-semibold text-teal-700">Live in Suite 3</span>
+                        </div>
+                        <div class="text-sm font-semibold text-ink">AI-guided implant scan</div>
+                        <div class="text-xs text-slate-500 mt-1">Dr. Reeves · 12 min remaining</div>
+                        <div class="mt-3 h-1.5 rounded-full bg-slate-200 overflow-hidden">
+                            <div class="h-full w-2/3 bg-gradient-to-r from-sky-400 to-teal-400 rounded-full"></div>
+                        </div>
+                    </div>
+
+                    <!-- Floating stat -->
+                    <div
+                        class="absolute -right-4 bottom-16 glass rounded-2xl p-4 shadow-xl float-4 w-52 hidden md:block">
+                        <div class="flex items-center gap-2">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-teal-500 flex items-center justify-center text-white">
+                                <i data-lucide="clock-3" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-display font-semibold text-ink leading-none">45<span
+                                        class="text-base">min</span></div>
+                                <div class="text-xs text-slate-500 mt-0.5">Average visit</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Play button -->
+                    <button onclick="scrollToTour()" aria-label="Watch Clinic Tour"
+                        class="absolute inset-0 flex items-center justify-center group cursor-pointer">
+                        <div
+                            class="w-20 h-20 rounded-full glass flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+                            <div class="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-inner">
+                                <i data-lucide="play" class="w-6 h-6 text-sky-600 fill-current translate-x-0.5"></i>
+                            </div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll cue -->
+        <div
+            class="absolute bottom-8 left-1/2 -translate-x-1/2 text-slate-400 text-xs flex flex-col items-center gap-2 pointer-events-none">
+            <span class="tracking-widest uppercase">Scroll</span>
+            <div class="w-px h-10 bg-gradient-to-b from-slate-400 to-transparent"></div>
+        </div>
+    </section>
+
+    <!-- Marquee: trusted by -->
+    <section class="py-10 border-y border-slate-100 bg-mist overflow-hidden">
+        <div class="max-w-6xl mx-auto px-6">
+            <p class="text-center text-xs uppercase tracking-widest text-slate-400 mb-6">In-network with premium
+                insurers</p>
+            <div class="marquee whitespace-nowrap opacity-70">
+                <div class="flex items-center gap-16 pr-16">
+                    <span class="text-2xl font-display font-semibold text-slate-500">Delta Dental</span>
+                    <span class="text-2xl font-display italic text-slate-500">Cigna</span>
+                    <span class="text-2xl font-display font-bold text-slate-500">Aetna</span>
+                    <span class="text-2xl font-display font-semibold text-slate-500">MetLife</span>
+                    <span class="text-2xl font-display italic text-slate-500">Humana</span>
+                    <span class="text-2xl font-display font-bold text-slate-500">UnitedHealth</span>
+                    <span class="text-2xl font-display font-semibold text-slate-500">Guardian</span>
+                    <span class="text-2xl font-display italic text-slate-500">Anthem</span>
+                </div>
+                <div class="flex items-center gap-16 pr-16">
+                    <span class="text-2xl font-display font-semibold text-slate-500">Delta Dental</span>
+                    <span class="text-2xl font-display italic text-slate-500">Cigna</span>
+                    <span class="text-2xl font-display font-bold text-slate-500">Aetna</span>
+                    <span class="text-2xl font-display font-semibold text-slate-500">MetLife</span>
+                    <span class="text-2xl font-display italic text-slate-500">Humana</span>
+                    <span class="text-2xl font-display font-bold text-slate-500">UnitedHealth</span>
+                    <span class="text-2xl font-display font-semibold text-slate-500">Guardian</span>
+                    <span class="text-2xl font-display italic text-slate-500">Anthem</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+     PATIENT JOURNEY (horizontal pinned scroll on desktop)
+═══════════════════════════════════════════════════════════ -->
+    <section id="journey" class="relative bg-ink text-white overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 py-20 text-center">
+            <div class="section-eyebrow mb-6" style="background:rgba(255,255,255,0.08); color:#7DD3FC;">
+                <i data-lucide="route" class="w-3.5 h-3.5"></i>
+                The modern patient journey
+            </div>
+            <h2 class="font-display text-4xl md:text-5xl lg:text-6xl font-light leading-tight">
+                From walk-in to <span class="italic text-teal-300">radiant smile</span>,<br />
+                in four unhurried steps.
+            </h2>
+            <p class="text-slate-400 mt-6 max-w-xl mx-auto text-base">
+                Every treatment follows the same calm, precise choreography — no molds, no guesswork, no wait.
+            </p>
+        </div>
+
+        <!-- Horizontal scroll container -->
+        <div id="journey-outer" class="relative pb-16 lg:pb-0">
+            <div id="journey-track" class="journey-track">
+
+                <!-- Panel 01 -->
+                <div class="journey-panel px-6">
+                    <div class="max-w-6xl w-full grid lg:grid-cols-2 gap-10 items-center">
+                        <div>
+                            <div class="text-teal-300 font-mono text-sm mb-3 font-semibold">STEP 01 / 04</div>
+                            <h3 class="font-display text-3xl md:text-4xl lg:text-5xl font-light leading-tight mb-6">
+                                3D Digital Scan.<br />
+                                <span class="italic text-teal-300">No messy molds.</span>
+                            </h3>
+                            <p class="text-slate-300 leading-relaxed mb-6 max-w-md text-base">
+                                A silent optical wand traces your mouth in 60 seconds. The result is a millimetre-accurate 3D
+                                model your dentist can share, rotate, and treat from.
+                            </p>
+                            <div class="flex gap-8 text-sm">
+                                <div>
+                                    <div class="text-3xl font-display text-white">60<span class="text-teal-300">s</span></div>
+                                    <div class="text-slate-400 text-xs uppercase tracking-wider mt-1">Scan time</div>
+                                </div>
+                                <div>
+                                    <div class="text-3xl font-display text-white">0.02<span class="text-teal-300">mm</span></div>
+                                    <div class="text-slate-400 text-xs uppercase tracking-wider mt-1">Precision</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=900&h=700&fit=crop"
+                                alt="3D dental scanner" class="rounded-3xl w-full h-[380px] lg:h-[480px] object-cover shadow-2xl">
+                            <div
+                                class="absolute -bottom-4 -left-4 glass-dark rounded-2xl px-5 py-3 border border-white/15">
+                                <div class="text-xs text-teal-300 uppercase tracking-wider font-semibold">Powered by</div>
+                                <div class="font-semibold text-sm">iTero Element 5D</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel 02 -->
+                <div class="journey-panel px-6">
+                    <div class="max-w-6xl w-full grid lg:grid-cols-2 gap-10 items-center">
+                        <div class="lg:order-2">
+                            <div class="text-teal-300 font-mono text-sm mb-3 font-semibold">STEP 02 / 04</div>
+                            <h3 class="font-display text-3xl md:text-4xl lg:text-5xl font-light leading-tight mb-6">
+                                AI-Assisted<br />
+                                <span class="italic text-teal-300">Smile Design.</span>
+                            </h3>
+                            <p class="text-slate-300 leading-relaxed mb-6 max-w-md text-base">
+                                Our design engine proposes shape, shade, and proportion tuned to your facial symmetry — you see the
+                                finished result before we lift a tool.
+                            </p>
+                            <div class="flex gap-8 text-sm">
+                                <div>
+                                    <div class="text-3xl font-display text-white">7</div>
+                                    <div class="text-slate-400 text-xs uppercase tracking-wider mt-1">Design iterations</div>
+                                </div>
+                                <div>
+                                    <div class="text-3xl font-display text-white">100<span class="text-teal-300">%</span></div>
+                                    <div class="text-slate-400 text-xs uppercase tracking-wider mt-1">Preview accuracy</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative lg:order-1">
+                            <img src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=900&h=700&fit=crop"
+                                alt="Smile design consultation" class="rounded-3xl w-full h-[380px] lg:h-[480px] object-cover shadow-2xl">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel 03 -->
+                <div class="journey-panel px-6">
+                    <div class="max-w-6xl w-full grid lg:grid-cols-2 gap-10 items-center">
+                        <div>
+                            <div class="text-teal-300 font-mono text-sm mb-3 font-semibold">STEP 03 / 04</div>
+                            <h3 class="font-display text-3xl md:text-4xl lg:text-5xl font-light leading-tight mb-6">
+                                Painless<br />
+                                <span class="italic text-teal-300">Laser Treatment.</span>
+                            </h3>
+                            <p class="text-slate-300 leading-relaxed mb-6 max-w-md text-base">
+                                Sub-millisecond diode lasers replace the drill for most procedures. No vibration, no
+                                anaesthesia for common cases, zero dread.
+                            </p>
+                            <div class="flex gap-8 text-sm">
+                                <div>
+                                    <div class="text-3xl font-display text-white">0</div>
+                                    <div class="text-slate-400 text-xs uppercase tracking-wider mt-1">Drills used</div>
+                                </div>
+                                <div>
+                                    <div class="text-3xl font-display text-white">99.4<span class="text-teal-300">%</span></div>
+                                    <div class="text-slate-400 text-xs uppercase tracking-wider mt-1">Pain-free rate</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <img src="https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=900&h=700&fit=crop"
+                                alt="Laser dental treatment" class="rounded-3xl w-full h-[380px] lg:h-[480px] object-cover shadow-2xl">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel 04 -->
+                <div class="journey-panel px-6">
+                    <div class="max-w-6xl w-full grid lg:grid-cols-2 gap-10 items-center">
+                        <div class="lg:order-2">
+                            <div class="text-teal-300 font-mono text-sm mb-3 font-semibold">STEP 04 / 04</div>
+                            <h3 class="font-display text-3xl md:text-4xl lg:text-5xl font-light leading-tight mb-6">
+                                Same-Day<br />
+                                <span class="italic text-teal-300">Natural Results.</span>
+                            </h3>
+                            <p class="text-slate-300 leading-relaxed mb-6 max-w-md text-base">
+                                Our in-house CAD/CAM mills high-density porcelain restorations while you relax. Walk out the same
+                                afternoon with the exact smile you designed.
+                            </p>
+                            <div class="flex gap-8 text-sm">
+                                <div>
+                                    <div class="text-3xl font-display text-white">1</div>
+                                    <div class="text-slate-400 text-xs uppercase tracking-wider mt-1">Visit needed</div>
+                                </div>
+                                <div>
+                                    <div class="text-3xl font-display text-white">15<span class="text-teal-300">yr</span></div>
+                                    <div class="text-slate-400 text-xs uppercase tracking-wider mt-1">Warranty</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative lg:order-1">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900&h=700&fit=crop"
+                                alt="Radiant healthy smile result" class="rounded-3xl w-full h-[380px] lg:h-[480px] object-cover shadow-2xl">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Journey progress bar (desktop pinned) -->
+        <div class="hidden lg:block fixed bottom-8 left-1/2 -translate-x-1/2 z-40 glass-dark rounded-full px-5 py-2.5 border border-white/10 opacity-0 pointer-events-none transition-opacity"
+            id="journey-progress">
+            <div class="flex items-center gap-3 text-white text-xs">
+                <span class="font-mono font-bold" id="progress-num">01</span>
+                <div class="w-32 h-1.5 bg-white/20 rounded-full overflow-hidden">
+                    <div id="progress-bar"
+                        class="h-full w-0 bg-gradient-to-r from-sky-400 to-teal-400 rounded-full transition-all duration-150"></div>
+                </div>
+                <span class="font-mono text-teal-300">/ 04</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+     SMILE TRANSFORMATION — before/after + quiz
+═══════════════════════════════════════════════════════════ -->
+    <section id="transformation" class="py-28 relative bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+
+            <div class="text-center mb-16 reveal">
+                <div class="section-eyebrow mb-6">
+                    <i data-lucide="wand-2" class="w-3.5 h-3.5"></i>
+                    Interactive smile studio
+                </div>
+                <h2 class="font-display text-4xl md:text-5xl lg:text-6xl font-light leading-tight text-ink">
+                    See the transformation.<br />
+                    <span class="italic text-sky-700">Drag slider to reveal.</span>
+                </h2>
+            </div>
+
+            <div class="grid lg:grid-cols-5 gap-10 items-start">
+
+                <!-- Before/After slider -->
+                <div class="lg:col-span-3 reveal">
+                    <div id="ba-slider" class="ba-wrap rounded-3xl shadow-2xl aspect-[4/3]">
+                        <img class="w-full h-full object-cover select-none pointer-events-none"
+                            src="https://images.unsplash.com/photo-1571772996211-2f02c9727629?w=1200&h=900&fit=crop"
+                            alt="Before smile transformation">
+                        <div class="ba-after">
+                            <img class="w-full h-full object-cover select-none pointer-events-none"
+                                src="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=1200&h=900&fit=crop"
+                                alt="After porcelain veneer transformation">
+                        </div>
+                        <div class="ba-handle" id="ba-handle"></div>
+                        <div
+                            class="absolute top-4 left-4 px-3.5 py-1.5 rounded-full bg-white/95 text-xs font-semibold text-ink shadow-md backdrop-blur-sm pointer-events-none">
+                            Before</div>
+                        <div
+                            class="absolute top-4 right-4 px-3.5 py-1.5 rounded-full bg-ink/90 text-xs font-semibold text-white shadow-md backdrop-blur-sm pointer-events-none">
+                            After</div>
+                    </div>
+                    <p class="text-sm text-slate-500 mt-4 text-center">
+                        Real Lumina patient · Custom Porcelain veneers · 1 appointment · Completed in 4 hours
+                    </p>
+                </div>
+
+                <!-- Assessment quiz -->
+                <div class="lg:col-span-2 reveal">
+                    <div
+                        class="bg-gradient-to-br from-pearl to-white rounded-3xl p-7 md:p-8 border border-slate-100 shadow-xl">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-teal-500 flex items-center justify-center text-white shadow-md">
+                                <i data-lucide="sparkles" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <div class="font-display text-xl text-ink font-semibold">Smile Assessment</div>
+                                <div class="text-xs text-slate-500">Step <span id="quiz-step">1</span> of 2 · 30 seconds
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 1 -->
+                        <div id="quiz-step-1">
+                            <p class="text-sm font-semibold text-ink mb-4">What is your primary smile goal?</p>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="quiz-opt rounded-2xl p-4 flex flex-col justify-between" data-goal="Whitening"
+                                    data-timeline="1 visit · 45 min session">
+                                    <i data-lucide="sun" class="w-6 h-6 text-sky-500 mb-2"></i>
+                                    <div class="font-semibold text-sm text-ink">Whitening</div>
+                                    <div class="text-xs text-slate-500 mt-1">Laser brightening</div>
+                                </div>
+                                <div class="quiz-opt rounded-2xl p-4 flex flex-col justify-between" data-goal="Aligners"
+                                    data-timeline="6–12 months · Clear Invisalign">
+                                    <i data-lucide="layers" class="w-6 h-6 text-sky-500 mb-2"></i>
+                                    <div class="font-semibold text-sm text-ink">Alignment</div>
+                                    <div class="text-xs text-slate-500 mt-1">Clear aligners</div>
+                                </div>
+                                <div class="quiz-opt rounded-2xl p-4 flex flex-col justify-between" data-goal="Veneers"
+                                    data-timeline="1 day · Same-day porcelain">
+                                    <i data-lucide="gem" class="w-6 h-6 text-sky-500 mb-2"></i>
+                                    <div class="font-semibold text-sm text-ink">Veneers</div>
+                                    <div class="text-xs text-slate-500 mt-1">Ceramic makeover</div>
+                                </div>
+                                <div class="quiz-opt rounded-2xl p-4 flex flex-col justify-between" data-goal="Implants"
+                                    data-timeline="1 surgery · 3D guided placement">
+                                    <i data-lucide="anchor" class="w-6 h-6 text-sky-500 mb-2"></i>
+                                    <div class="font-semibold text-sm text-ink">Implants</div>
+                                    <div class="text-xs text-slate-500 mt-1">Permanent restoration</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 (result) -->
+                        <div id="quiz-step-2" class="hidden">
+                            <div class="text-center py-4">
+                                <div
+                                    class="w-14 h-14 rounded-full bg-gradient-to-br from-teal-400 to-sky-500 mx-auto flex items-center justify-center mb-4 shadow-lg shadow-teal-500/20">
+                                    <i data-lucide="check" class="w-7 h-7 text-white"></i>
+                                </div>
+                                <p class="text-xs uppercase tracking-wider text-teal-700 font-semibold mb-1">Recommended treatment plan</p>
+                                <p class="font-display text-2xl font-bold text-ink mb-1" id="quiz-timeline">—</p>
+                                <p class="text-sm text-slate-600 mb-6 font-medium" id="quiz-goal-label">—</p>
+
+                                <button id="quiz-book-btn" onclick="bookFromQuiz()"
+                                    class="cta-primary w-full text-white text-sm font-semibold px-6 py-3.5 rounded-xl flex items-center justify-center gap-2">
+                                    <i data-lucide="calendar-check" class="w-4 h-4"></i>
+                                    <span>Book 3D scan for <span id="quiz-service-name">this treatment</span></span>
+                                </button>
+                                <button onclick="resetQuiz()"
+                                    class="mt-3 text-xs text-slate-500 hover:text-ink transition font-medium">
+                                    ← Choose a different goal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+     SERVICES — bento grid with interactive drawers
+═══════════════════════════════════════════════════════════ -->
+    <section id="services" class="py-28 bg-gradient-to-b from-white to-mist">
+        <div class="max-w-7xl mx-auto px-6">
+
+            <div class="max-w-3xl mb-16 reveal">
+                <div class="section-eyebrow mb-6">
+                    <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+                    Signature services
+                </div>
+                <h2 class="font-display text-4xl md:text-5xl lg:text-6xl font-light leading-tight text-ink">
+                    Four disciplines,<br />
+                    <span class="italic text-sky-700">one calm studio.</span>
+                </h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-6 gap-6">
+
+                <!-- Card 1: Veneers (large) -->
+                <div class="tilt md:col-span-4 relative rounded-3xl overflow-hidden group cursor-pointer bg-white border border-slate-100 shadow-lg flex flex-col justify-between"
+                    data-drawer="veneers">
+                    <div class="relative h-72 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=1200&h=800&fit=crop"
+                            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            alt="Porcelain veneers">
+                        <div class="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-transparent"></div>
+                        <div
+                            class="absolute top-5 right-5 px-3.5 py-1.5 rounded-full bg-white/95 text-xs font-semibold text-ink shadow-md backdrop-blur-sm">
+                            Starting at $2,400
+                        </div>
+                    </div>
+                    <div class="p-8">
+                        <div class="flex items-center gap-2 text-xs text-sky-600 mb-2 font-semibold">
+                            <i data-lucide="gem" class="w-4 h-4"></i> Cosmetic
+                        </div>
+                        <h3 class="font-display text-3xl text-ink mb-3 font-medium">Porcelain veneers</h3>
+                        <p class="text-slate-600 mb-5 text-sm leading-relaxed">Ultra-thin, hand-layered ceramic — matched to your face, milled
+                            on-site, and fitted in a single unhurried afternoon.</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4 text-xs text-slate-500">
+                                <span class="flex items-center gap-1.5"><i data-lucide="clock" class="w-3.5 h-3.5 text-teal-600"></i> 1 day visit</span>
+                                <span class="flex items-center gap-1.5"><i data-lucide="shield" class="w-3.5 h-3.5 text-teal-600"></i> 15 yr warranty</span>
+                            </div>
+                            <button
+                                class="text-sm font-semibold text-sky-600 flex items-center gap-1 group-hover:gap-2 transition-all">
+                                <span>Details</span>
+                                <i data-lucide="chevron-down" class="w-4 h-4 drawer-icon transition-transform duration-300"></i>
+                            </button>
+                        </div>
+                        <div class="drawer-content mt-0">
+                            <div class="pt-6 mt-6 border-t border-slate-100 text-sm text-slate-600 leading-relaxed space-y-3">
+                                <p>
+                                    Each veneer is 0.3–0.5mm thick, individually shaded to blend with your natural enamel,
+                                    and bonded permanently. Total appointment is ~4 hours including 3D scan, live digital design approval,
+                                    diamond milling, and final placement.
+                                </p>
+                                <div class="flex items-center justify-between pt-2">
+                                    <span class="text-xs text-slate-500">No temporaries · Zero enamel damage</span>
+                                    <button onclick="event.stopPropagation(); openModal('Veneers')"
+                                        class="cta-primary text-white text-xs font-semibold px-4 py-2 rounded-lg">
+                                        Book Veneers Demo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Aligners -->
+                <div class="tilt md:col-span-2 relative rounded-3xl overflow-hidden group cursor-pointer bg-gradient-to-br from-sky-500 to-teal-600 text-white shadow-lg flex flex-col justify-between"
+                    data-drawer="aligners">
+                    <div class="p-8 h-full flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 text-xs mb-2 font-semibold text-teal-100">
+                                <i data-lucide="layers" class="w-4 h-4"></i> Orthodontics
+                            </div>
+                            <h3 class="font-display text-3xl mb-3 font-medium">Invisible aligners</h3>
+                            <p class="text-white/85 mb-5 text-sm leading-relaxed">Clear, BPA-free, custom aligners. Track your teeth movement weekly through our AI phone app.</p>
+                        </div>
+
+                        <div>
+                            <img src="https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=600&h=400&fit=crop"
+                                class="rounded-2xl w-full h-28 object-cover mb-4 opacity-90 shadow-md" alt="Clear aligners">
+                            <div class="flex items-center justify-between text-sm">
+                                <div>
+                                    <div class="font-display text-2xl font-semibold">$3,800</div>
+                                    <div class="text-xs text-white/70">Full treatment plan</div>
+                                </div>
+                                <button
+                                    class="text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
+                                    <span>Details</span>
+                                    <i data-lucide="chevron-down" class="w-4 h-4 drawer-icon transition-transform duration-300"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="drawer-content mt-0">
+                            <div class="pt-5 mt-5 border-t border-white/20 text-xs text-white/90 leading-relaxed space-y-2">
+                                <p>Includes initial 3D digital simulation, all aligner sets, 2 free refinement rounds, and customized nighttime retainers.</p>
+                                <button onclick="event.stopPropagation(); openModal('Aligners')"
+                                    class="w-full mt-2 bg-white text-sky-700 font-semibold py-2 rounded-lg text-xs hover:bg-teal-50 transition">
+                                    Book Aligners Consult
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Implants -->
+                <div class="tilt md:col-span-3 relative rounded-3xl overflow-hidden group cursor-pointer bg-ink text-white shadow-lg flex flex-col justify-between"
+                    data-drawer="implants">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 h-full">
+                        <div class="p-8 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-2 text-xs mb-2 font-semibold text-teal-300">
+                                    <i data-lucide="anchor" class="w-4 h-4"></i> Surgical
+                                </div>
+                                <h3 class="font-display text-3xl mb-3 font-medium">Guided implants</h3>
+                                <p class="text-white/70 mb-4 text-sm leading-relaxed">Sub-millimeter robot-guided placement. Medical grade titanium fixture with ceramic crown.</p>
+                            </div>
+                            <div>
+                                <div class="font-display text-2xl font-semibold">Starting $4,200</div>
+                                <div class="text-xs text-white/50 mt-0.5">Per tooth, all-inclusive</div>
+                                <button class="mt-3 text-sm font-semibold text-teal-300 flex items-center gap-1 group-hover:gap-2 transition-all">
+                                    <span>Details</span>
+                                    <i data-lucide="chevron-down" class="w-4 h-4 drawer-icon transition-transform duration-300"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="relative h-56 sm:h-full">
+                            <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=600&h=800&fit=crop"
+                                class="w-full h-full object-cover" alt="Guided implant suite">
+                        </div>
+                    </div>
+
+                    <div class="drawer-content px-8 pb-6">
+                        <div class="pt-5 border-t border-white/10 text-xs text-slate-300 leading-relaxed space-y-2">
+                            <p>3D cone-beam computed tomography (CBCT) navigation ensures exact angle and depth. Minimally invasive surgery with rapid 48-hour recovery.</p>
+                            <button onclick="event.stopPropagation(); openModal('Implants')"
+                                class="cta-primary text-white font-semibold px-4 py-2 rounded-lg text-xs">
+                                Book Guided Implant Consult
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Preventive -->
+                <div class="tilt md:col-span-3 relative rounded-3xl overflow-hidden group cursor-pointer bg-white border border-slate-100 shadow-lg flex flex-col justify-between"
+                    data-drawer="preventive">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 h-full">
+                        <div class="relative h-56 sm:h-full order-2 sm:order-1">
+                            <img src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600&h=800&fit=crop"
+                                class="w-full h-full object-cover" alt="Spa dental cleaning">
+                        </div>
+                        <div class="p-8 flex flex-col justify-between order-1 sm:order-2">
+                            <div>
+                                <div class="flex items-center gap-2 text-xs text-sky-600 mb-2 font-semibold">
+                                    <i data-lucide="sparkles" class="w-4 h-4"></i> Preventive
+                                </div>
+                                <h3 class="font-display text-3xl text-ink mb-3 font-medium">Airflow spa cleaning</h3>
+                                <p class="text-slate-600 mb-4 text-sm leading-relaxed">Gentle warm-water spray with erythritol powder. No scraping, zero discomfort.</p>
+                            </div>
+                            <div>
+                                <div class="font-display text-2xl text-ink font-semibold">$180</div>
+                                <div class="text-xs text-slate-500 mt-0.5">45-minute wellness session</div>
+                                <button class="mt-3 text-sm font-semibold text-sky-600 flex items-center gap-1 group-hover:gap-2 transition-all">
+                                    <span>Details</span>
+                                    <i data-lucide="chevron-down" class="w-4 h-4 drawer-icon transition-transform duration-300"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="drawer-content px-8 pb-6">
+                        <div class="pt-5 border-t border-slate-100 text-xs text-slate-600 leading-relaxed space-y-2">
+                            <p>Swiss AirFlow technology removes 100% of dental biofilm, coffee stains, and bacteria gently. Includes remineralizing enamel polish.</p>
+                            <button onclick="event.stopPropagation(); openModal('Cleaning')"
+                                class="cta-primary text-white font-semibold px-4 py-2 rounded-lg text-xs">
+                                Book Spa Cleaning
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+     CINEMATIC TOUR
+═══════════════════════════════════════════════════════════ -->
+    <section id="tour" class="relative py-28 bg-ink overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6">
+
+            <div class="max-w-3xl mb-14 reveal">
+                <div class="section-eyebrow mb-6" style="background:rgba(255,255,255,0.08); color:#7DD3FC;">
+                    <i data-lucide="video" class="w-3.5 h-3.5"></i>
+                    Inside Lumina
+                </div>
+                <h2 class="font-display text-4xl md:text-5xl lg:text-6xl font-light leading-tight text-white">
+                    A studio designed to<br />
+                    <span class="italic text-teal-300">quiet the noise.</span>
+                </h2>
+            </div>
+
+            <div class="relative rounded-3xl overflow-hidden group reveal shadow-2xl border border-white/10">
+                <video id="tour-video" autoplay muted loop playsinline
+                    poster="https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1600&h=900&fit=crop"
+                    class="w-full h-[450px] md:h-[580px] object-cover">
+                    <source src="https://vjs.zencdn.net/v/oceans.mp4" type="video/mp4">
+                </video>
+
+                <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/35 to-transparent pointer-events-none"></div>
+
+                <!-- Overlay content -->
+                <div class="absolute bottom-8 left-8 right-8 flex items-end justify-between gap-6 flex-wrap">
+                    <div>
+                        <p class="text-teal-300 text-xs font-mono uppercase tracking-widest mb-2">Suite 03 · Live Clinic Tour</p>
+                        <h3 class="font-display text-2xl md:text-4xl text-white font-light max-w-md">
+                            Meet Dr. Elise Reeves,<br />
+                            <span class="italic text-teal-200">Clinical Director.</span>
+                        </h3>
+                    </div>
+                    <button id="sound-toggle-btn" onclick="toggleAmbientSound()"
+                        class="glass-dark border border-white/25 rounded-full px-5 py-3 text-white text-sm font-semibold flex items-center gap-2 hover:bg-white/20 transition cursor-pointer shadow-lg">
+                        <i id="sound-icon" data-lucide="volume-2" class="w-4 h-4"></i>
+                        <span id="sound-text">Play ambient audio</span>
+                    </button>
+                </div>
+
+                <!-- Stats floating -->
+                <div class="absolute top-8 right-8 glass-dark rounded-2xl p-4 border border-white/15 hidden md:block">
+                    <div class="text-teal-300 text-xs uppercase tracking-wider mb-2 font-mono">Real-time status</div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-teal-400 pulse-dot"></div>
+                        <span class="text-white text-sm font-medium">3 suites active · 0 min wait</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Floating stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                <div class="glass-dark rounded-2xl p-6 border border-white/10 reveal">
+                    <div class="font-display text-4xl text-white mb-1">99.4<span class="text-teal-300">%</span></div>
+                    <div class="text-slate-400 text-sm">Pain-free procedure satisfaction</div>
+                </div>
+                <div class="glass-dark rounded-2xl p-6 border border-white/10 reveal">
+                    <div class="font-display text-4xl text-white mb-1">0<span class="text-teal-300">min</span></div>
+                    <div class="text-slate-400 text-sm">Strict zero-wait waiting room guarantee</div>
+                </div>
+                <div class="glass-dark rounded-2xl p-6 border border-white/10 reveal">
+                    <div class="font-display text-4xl text-white mb-1">24<span class="text-teal-300">/7</span></div>
+                    <div class="text-slate-400 text-sm">Direct concierge &amp; emergency care</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+     REVIEWS
+═══════════════════════════════════════════════════════════ -->
+    <section id="reviews" class="py-28 bg-mist">
+        <div class="max-w-7xl mx-auto px-6">
+
+            <div class="text-center mb-14 reveal">
+                <div class="section-eyebrow mb-6">
+                    <i data-lucide="quote" class="w-3.5 h-3.5"></i>
+                    In their words
+                </div>
+                <h2 class="font-display text-4xl md:text-5xl lg:text-6xl font-light leading-tight text-ink">
+                    Read what our <span class="italic text-sky-700">patients say.</span>
+                </h2>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+
+                <div class="bg-white rounded-3xl p-8 shadow-lg reveal flex flex-col justify-between">
+                    <div>
+                        <div class="flex text-amber-500 mb-4">
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        </div>
+                        <p class="font-display text-xl text-ink leading-relaxed mb-6 font-normal">
+                            "I didn't realise a dental visit could feel this quiet. Full set of veneers in a single
+                            afternoon — I still can't stop smiling."
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 pt-4 border-t border-slate-100">
+                        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&h=100&fit=crop&crop=faces"
+                            class="w-11 h-11 rounded-full object-cover" alt="Amara Chen">
+                        <div>
+                            <div class="font-semibold text-sm text-ink">Amara Chen</div>
+                            <div class="text-xs text-slate-500">Porcelain Veneers · Verified Patient</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-ink text-white rounded-3xl p-8 shadow-lg reveal flex flex-col justify-between">
+                    <div>
+                        <div class="flex text-amber-400 mb-4">
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        </div>
+                        <p class="font-display text-xl leading-relaxed mb-6 font-normal">
+                            "The 3D scan was over before I noticed it started. Dr. Reeves walked me through every option on
+                            the screen. No pressure, no upsell."
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 pt-4 border-t border-white/10">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces"
+                            class="w-11 h-11 rounded-full object-cover" alt="Marcus Whitfield">
+                        <div>
+                            <div class="font-semibold text-sm">Marcus Whitfield</div>
+                            <div class="text-xs text-slate-400">Guided Implant · Verified Patient</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl p-8 shadow-lg reveal flex flex-col justify-between">
+                    <div>
+                        <div class="flex text-amber-500 mb-4">
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                            <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        </div>
+                        <p class="font-display text-xl text-ink leading-relaxed mb-6 font-normal">
+                            "Brought my seven-year-old for her first cleaning. She asked when we could come back. Pure magic."
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 pt-4 border-t border-slate-100">
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop&crop=faces"
+                            class="w-11 h-11 rounded-full object-cover" alt="Priya Nair">
+                        <div>
+                            <div class="font-semibold text-sm text-ink">Priya Nair</div>
+                            <div class="text-xs text-slate-500">Airflow Cleaning · Verified Patient</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+     CTA BANNER
+═══════════════════════════════════════════════════════════ -->
+    <section class="py-24 bg-white">
+        <div class="max-w-6xl mx-auto px-6">
+            <div
+                class="relative rounded-[2.5rem] overflow-hidden p-10 md:p-16 shadow-2xl border border-slate-100"
+                style="background: linear-gradient(135deg, #0A1128 0%, #0369A1 50%, #0D9488 100%);">
+                
+                <!-- Background Image with Blend Overlay -->
+                <img src="https://images.unsplash.com/photo-1629909615184-74f495363b67?w=1600&h=800&fit=crop"
+                    alt="Lumina Dental Studio Suite"
+                    class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-35 pointer-events-none">
+                
+                <div class="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/70 to-transparent pointer-events-none"></div>
+
+                <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-sky-400/25 blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-teal-400/25 blur-3xl pointer-events-none"></div>
+
+                <div class="relative z-10 text-white max-w-2xl">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 text-teal-300 text-xs font-semibold uppercase tracking-wider mb-6 backdrop-blur-md border border-white/15">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-teal-300"></i>
+                        Complimentary Consultation
+                    </div>
+                    <h2 class="font-display text-4xl md:text-5xl lg:text-6xl font-light leading-tight mb-5 text-white">
+                        Ready when <span class="italic text-teal-300">you are.</span>
+                    </h2>
+                    <p class="text-slate-200 mb-8 text-base md:text-lg leading-relaxed max-w-lg">
+                        Book a complimentary 20-minute consultation and 3D digital scan — zero obligation, no clinical pressure.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <button onclick="openModal()"
+                            class="bg-white text-slate-900 hover:bg-slate-50 font-bold px-7 py-4 rounded-xl text-sm flex items-center gap-2.5 transition shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transform duration-200">
+                            <i data-lucide="calendar" class="w-4 h-4 text-sky-600"></i>
+                            <span>Book demo consultation</span>
+                        </button>
+                        <a href="tel:+15551234567"
+                            class="glass-dark border border-white/30 text-white font-semibold px-6 py-4 rounded-xl text-sm flex items-center gap-2.5 hover:bg-white/20 transition backdrop-blur-md">
+                            <i data-lucide="phone" class="w-4 h-4 text-teal-300"></i>
+                            <span>(555) 123-4567</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════════════════════════ -->
+    <footer class="bg-ink text-white pt-20 pb-12">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-10 pb-14 border-b border-white/10">
+
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-2 mb-4">
+                        <svg width="30" height="30" viewBox="0 0 40 40" fill="none">
+                            <path
+                                d="M20 4 C11 4 6 10 6 18 c0 5 2 9 4 14 c1 2 3 4 5 4 c2 0 3-2 3-5 v-6 c0-1 1-2 2-2 s2 1 2 2 v6 c0 3 1 5 3 5 c2 0 4-2 5-4 c2-5 4-9 4-14 c0-8-5-14-14-14 z"
+                                fill="url(#brand-grad)" />
+                        </svg>
+                        <span class="font-display text-2xl font-medium">Lumina<span class="text-teal-300">.</span></span>
+                    </div>
+                    <p class="text-slate-400 max-w-sm text-sm leading-relaxed">
+                        A quieter kind of dental studio. Full-service cosmetic and restorative dentistry, delivered
+                        without the clinical noise.
+                    </p>
+
+                    <div class="mt-6 flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-teal-400 pulse-dot"></div>
+                        <span class="text-sm text-slate-300">Open today until 7:00 PM</span>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-sm mb-4 text-teal-300">Visit Studio</h4>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        128 Elm Court<br />
+                        Suite 400<br />
+                        Portland, OR 97205
+                    </p>
+                    <p class="text-slate-400 text-sm mt-3">
+                        Mon–Fri: 8am–7pm<br />
+                        Sat: 9am–3pm
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-sm mb-4 text-teal-300">Get in touch</h4>
+                    <p class="text-slate-400 text-sm mb-2">(555) 123-4567</p>
+                    <p class="text-slate-400 text-sm mb-4">hello@luminadental.co</p>
+                    <div class="flex gap-3">
+                        <a href="#" aria-label="Instagram"
+                            class="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 transition">
+                            <i data-lucide="instagram" class="w-4 h-4"></i>
+                        </a>
+                        <a href="#" aria-label="Facebook"
+                            class="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 transition">
+                            <i data-lucide="facebook" class="w-4 h-4"></i>
+                        </a>
+                        <a href="#" aria-label="YouTube"
+                            class="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 transition">
+                            <i data-lucide="youtube" class="w-4 h-4"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-4 pt-8 text-xs text-slate-500">
+                <div>© 2025 Lumina Dental Studio. All rights reserved.</div>
+                <div class="flex gap-6">
+                    <a href="#" class="hover:text-white transition">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition">Terms of Service</a>
+                    <a href="#" class="hover:text-white transition">Accessibility</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile sticky action bar -->
+    <div class="lg:hidden fixed bottom-0 left-0 right-0 z-40 glass border-t border-slate-200/50 p-3 flex gap-2">
+        <a href="tel:+15551234567"
+            class="flex-1 border border-slate-200 bg-white/90 text-ink font-semibold py-3 rounded-xl flex items-center justify-center gap-2 text-sm shadow-sm">
+            <i data-lucide="phone" class="w-4 h-4 text-sky-600"></i> Call
+        </a>
+        <button onclick="openModal()"
+            class="flex-1 cta-primary text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 text-sm shadow-md">
+            <i data-lucide="calendar" class="w-4 h-4"></i> Book demo
+        </button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+     BOOKING MODAL
+═══════════════════════════════════════════════════════════ -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-card p-6 md:p-8" onclick="event.stopPropagation()">
+
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <div class="section-eyebrow mb-2">
+                        <i data-lucide="calendar-check" class="w-3.5 h-3.5"></i>
+                        Book demo consultation
+                    </div>
+                    <h3 class="font-display text-2xl md:text-3xl text-ink font-semibold">Let's find your time.</h3>
+                </div>
+                <button onclick="closeModal()" aria-label="Close modal"
+                    class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition">
+                    <i data-lucide="x" class="w-4 h-4 text-slate-600"></i>
+                </button>
+            </div>
+
+            <!-- Progress -->
+            <div class="flex items-center gap-3 mb-6">
+                <div class="flex-1 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                    <div id="modal-progress" class="h-full bg-gradient-to-r from-sky-500 to-teal-500 transition-all duration-300"
+                        style="width:33%"></div>
+                </div>
+                <span class="text-xs text-slate-500 font-mono font-medium">Step <span id="modal-step-num">1</span> of 3</span>
+            </div>
+
+            <!-- Step 1: service -->
+            <div class="modal-step" data-step="1">
+                <p class="font-semibold text-sm mb-3 text-ink">What treatment are you interested in?</p>
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                    <div class="modal-opt rounded-2xl p-4 selected" data-value="Veneers">
+                        <input type="radio" name="service" value="Veneers" checked class="hidden">
+                        <i data-lucide="gem" class="w-5 h-5 text-sky-500 mb-2"></i>
+                        <div class="font-semibold text-sm text-ink">Porcelain Veneers</div>
+                        <div class="text-xs text-slate-500 mt-1">Same-day ceramic</div>
+                    </div>
+                    <div class="modal-opt rounded-2xl p-4" data-value="Aligners">
+                        <input type="radio" name="service" value="Aligners" class="hidden">
+                        <i data-lucide="layers" class="w-5 h-5 text-sky-500 mb-2"></i>
+                        <div class="font-semibold text-sm text-ink">Invisible Aligners</div>
+                        <div class="text-xs text-slate-500 mt-1">Invisalign treatment</div>
+                    </div>
+                    <div class="modal-opt rounded-2xl p-4" data-value="Implants">
+                        <input type="radio" name="service" value="Implants" class="hidden">
+                        <i data-lucide="anchor" class="w-5 h-5 text-sky-500 mb-2"></i>
+                        <div class="font-semibold text-sm text-ink">Guided Implants</div>
+                        <div class="text-xs text-slate-500 mt-1">Permanent replacement</div>
+                    </div>
+                    <div class="modal-opt rounded-2xl p-4" data-value="Cleaning">
+                        <input type="radio" name="service" value="Cleaning" class="hidden">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-sky-500 mb-2"></i>
+                        <div class="font-semibold text-sm text-ink">Spa Cleaning</div>
+                        <div class="text-xs text-slate-500 mt-1">Airflow painless scaling</div>
+                    </div>
+                </div>
+                <button onclick="nextStep(2)" class="cta-primary w-full text-white font-semibold py-3.5 rounded-xl shadow-md">
+                    Continue to Provider &amp; Date
+                </button>
+            </div>
+
+            <!-- Step 2: doctor + date -->
+            <div class="modal-step hidden" data-step="2">
+                <p class="font-semibold text-sm mb-3 text-ink">Preferred provider</p>
+                <div class="grid grid-cols-2 gap-3 mb-5">
+                    <div class="doctor-opt rounded-2xl p-3 flex items-center gap-3 selected" data-doctor="Dr. Elise Reeves">
+                        <input type="radio" name="doctor" value="Dr. Elise Reeves" checked class="hidden">
+                        <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=100&h=100&fit=crop&crop=faces"
+                            class="w-11 h-11 rounded-full object-cover" alt="Dr. Elise Reeves">
+                        <div>
+                            <div class="text-sm font-semibold text-ink">Dr. Reeves</div>
+                            <div class="text-xs text-slate-500">Cosmetics &amp; Veneers</div>
+                        </div>
+                    </div>
+                    <div class="doctor-opt rounded-2xl p-3 flex items-center gap-3" data-doctor="Dr. Michael Kwan">
+                        <input type="radio" name="doctor" value="Dr. Michael Kwan" class="hidden">
+                        <img src="https://images.unsplash.com/photo-1622902046580-2b47f47f5471?w=100&h=100&fit=crop&crop=faces"
+                            class="w-11 h-11 rounded-full object-cover" alt="Dr. Michael Kwan">
+                        <div>
+                            <div class="text-sm font-semibold text-ink">Dr. Kwan</div>
+                            <div class="text-xs text-slate-500">Surgical &amp; Implants</div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="font-semibold text-sm mb-2 text-ink">Preferred date</p>
+                <input type="date" id="booking-date"
+                    class="w-full border border-slate-200 rounded-xl px-4 py-3 mb-6 text-sm text-slate-800 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500">
+
+                <div class="flex gap-3">
+                    <button onclick="prevStep(1)"
+                        class="cta-ghost flex-1 py-3.5 rounded-xl font-semibold text-sm text-slate-700">Back</button>
+                    <button onclick="nextStep(3)"
+                        class="cta-primary flex-1 text-white font-semibold py-3.5 rounded-xl shadow-md">Continue</button>
+                </div>
+            </div>
+
+            <!-- Step 3: contact -->
+            <div class="modal-step hidden" data-step="3">
+                <p class="font-semibold text-sm mb-3 text-ink">Your contact information</p>
+
+                <div class="space-y-3 mb-5">
+                    <div>
+                        <input type="text" id="cust-name" placeholder="Full name *"
+                            class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500">
+                    </div>
+                    <div>
+                        <input type="email" id="cust-email" placeholder="Email address *"
+                            class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500">
+                    </div>
+                    <div>
+                        <input type="tel" id="cust-phone" placeholder="Phone number *"
+                            class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500">
+                    </div>
+                </div>
+
+                <p id="form-error" class="hidden text-rose-500 text-xs font-medium mb-4"></p>
+
+                <div class="flex gap-3">
+                    <button onclick="prevStep(2)"
+                        class="cta-ghost flex-1 py-3.5 rounded-xl font-semibold text-sm text-slate-700">Back</button>
+                    <button onclick="confirmBooking()"
+                        class="cta-primary flex-1 text-white font-semibold py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-md">
+                        <i data-lucide="check" class="w-4 h-4"></i>
+                        <span>Confirm booking</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Confirmation Step 4 -->
+            <div class="modal-step hidden" data-step="4">
+                <div class="text-center py-4">
+                    <div
+                        class="w-16 h-16 rounded-full bg-gradient-to-br from-teal-400 to-sky-500 mx-auto flex items-center justify-center mb-4 shadow-xl shadow-teal-500/20">
+                        <i data-lucide="check" class="w-8 h-8 text-white"></i>
+                    </div>
+                    <h4 class="font-display text-2xl md:text-3xl text-ink font-semibold mb-2">You're scheduled!</h4>
+                    <p class="text-slate-600 mb-6 text-sm">
+                        A calendar invite has been sent. We will text you a polite reminder 24 hours prior.
+                    </p>
+
+                    <div id="booking-receipt" class="bg-pearl rounded-2xl p-4 text-left text-xs text-slate-700 space-y-2 mb-6 border border-sky-100">
+                        <!-- Populated dynamically -->
+                    </div>
+
+                    <button onclick="closeModal()"
+                        class="cta-primary w-full text-white font-semibold py-3.5 rounded-xl shadow-md">Done</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+     SCRIPTS
+═══════════════════════════════════════════════════════════ -->
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        /* ────────────────────────────────────────────────────────
+           Scroll Reveal
+        ──────────────────────────────────────────────────────── */
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.classList.add('on');
+                    io.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+        /* ────────────────────────────────────────────────────────
+           Floating Orbs GSAP
+        ──────────────────────────────────────────────────────── */
+        gsap.to('.float-1', { y: 40, x: -20, duration: 6, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+        gsap.to('.float-2', { y: -30, x: 20, duration: 7, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+        gsap.to('.float-3', { y: -14, duration: 3.5, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+        gsap.to('.float-4', { y: 10, duration: 4, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+
+        /* ────────────────────────────────────────────────────────
+           Patient Journey — Responsive GSAP Horizontal Scroll
+        ──────────────────────────────────────────────────────── */
+        gsap.registerPlugin(ScrollTrigger);
+
+        const track = document.getElementById('journey-track');
+        const outer = document.getElementById('journey-outer');
+        const panels = document.querySelectorAll('.journey-panel');
+        const progressBar = document.getElementById('progress-bar');
+        const progressNum = document.getElementById('progress-num');
+        const progressPill = document.getElementById('journey-progress');
+
+        const mm = gsap.matchMedia();
+
+        mm.add("(min-width: 1024px)", () => {
+            const totalScroll = () => (panels.length - 1) * window.innerWidth;
+
+            const st = gsap.to(track, {
+                x: () => -totalScroll(),
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: outer,
+                    pin: true,
+                    scrub: 1,
+                    start: 'top top',
+                    end: () => '+=' + totalScroll(),
+                    invalidateOnRefresh: true,
+                    onUpdate: (self) => {
+                        const p = self.progress;
+                        if (progressBar) progressBar.style.width = (p * 100) + '%';
+                        const idx = Math.min(panels.length, Math.floor(p * panels.length) + 1);
+                        if (progressNum) progressNum.textContent = String(idx).padStart(2, '0');
+                    },
+                    onEnter: () => { if (progressPill) progressPill.style.opacity = 1; },
+                    onLeave: () => { if (progressPill) progressPill.style.opacity = 0; },
+                    onEnterBack: () => { if (progressPill) progressPill.style.opacity = 1; },
+                    onLeaveBack: () => { if (progressPill) progressPill.style.opacity = 0; },
+                }
+            });
+
+            return () => {
+                if (st.scrollTrigger) st.scrollTrigger.kill();
+            };
+        });
+
+        /* ────────────────────────────────────────────────────────
+           Navbar Scroll Shadow & Mobile Menu
+        ──────────────────────────────────────────────────────── */
+        const nav = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                nav.querySelector('.glass').classList.add('shadow-2xl');
+            } else {
+                nav.querySelector('.glass').classList.remove('shadow-2xl');
+            }
+        });
+
+        const mobileMenu = document.getElementById('mobile-menu');
+        const hamburgerIcon = document.getElementById('hamburger-icon');
+
+        function toggleMobileMenu() {
+            const isOpen = mobileMenu.classList.contains('menu-open');
+            if (isOpen) {
+                mobileMenu.classList.remove('menu-open');
+                mobileMenu.classList.add('menu-closed');
+                hamburgerIcon.setAttribute('data-lucide', 'menu');
+            } else {
+                mobileMenu.classList.remove('menu-closed');
+                mobileMenu.classList.add('menu-open');
+                hamburgerIcon.setAttribute('data-lucide', 'x');
+            }
+            lucide.createIcons();
+        }
+
+        /* ────────────────────────────────────────────────────────
+           Hero Tour Video Scroll Helper
+        ──────────────────────────────────────────────────────── */
+        function scrollToTour() {
+            const tourSec = document.getElementById('tour');
+            if (tourSec) {
+                tourSec.scrollIntoView({ behavior: 'smooth' });
+                const vid = document.getElementById('tour-video');
+                if (vid) vid.play().catch(() => {});
+            }
+        }
+
+        /* ────────────────────────────────────────────────────────
+           Before/After Slider (Smooth Pointer / Touch handling)
+        ──────────────────────────────────────────────────────── */
+        const ba = document.getElementById('ba-slider');
+        const baAfter = ba.querySelector('.ba-after');
+        const baHandle = document.getElementById('ba-handle');
+        let dragging = false;
+
+        function setBA(pct) {
+            pct = Math.max(0, Math.min(100, pct));
+            baAfter.style.clipPath = `inset(0 0 0 ${pct}%)`;
+            baHandle.style.left = pct + '%';
+        }
+        setBA(50);
+
+        function updateSliderPosition(clientX) {
+            const rect = ba.getBoundingClientRect();
+            const x = clientX - rect.left;
+            const pct = (x / rect.width) * 100;
+            setBA(pct);
+        }
+
+        ba.addEventListener('pointerdown', (e) => {
+            dragging = true;
+            ba.setPointerCapture(e.pointerId);
+            updateSliderPosition(e.clientX);
+        });
+
+        ba.addEventListener('pointermove', (e) => {
+            if (!dragging) return;
+            updateSliderPosition(e.clientX);
+        });
+
+        ba.addEventListener('pointerup', (e) => {
+            dragging = false;
+            try { ba.releasePointerCapture(e.pointerId); } catch(err){}
+        });
+
+        ba.addEventListener('pointercancel', () => { dragging = false; });
+
+        /* ────────────────────────────────────────────────────────
+           Bento 3D Tilt
+        ──────────────────────────────────────────────────────── */
+        document.querySelectorAll('.tilt').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const rx = ((y / rect.height) - 0.5) * -6;
+                const ry = ((x / rect.width) - 0.5) * 6;
+                card.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+            });
+        });
+
+        /* ────────────────────────────────────────────────────────
+           Service Bento Accordion Drawers
+        ──────────────────────────────────────────────────────── */
+        document.querySelectorAll('[data-drawer]').forEach(el => {
+            el.addEventListener('click', (e) => {
+                const drawer = el.querySelector('.drawer-content');
+                const icon = el.querySelector('.drawer-icon');
+                if (drawer) {
+                    const isOpen = drawer.classList.contains('open');
+                    // Close other open drawers
+                    document.querySelectorAll('.drawer-content.open').forEach(d => {
+                        if (d !== drawer) {
+                            d.classList.remove('open');
+                            const parent = d.closest('[data-drawer]');
+                            if (parent) {
+                                const ico = parent.querySelector('.drawer-icon');
+                                if (ico) ico.style.transform = '';
+                            }
+                        }
+                    });
+
+                    drawer.classList.toggle('open');
+                    if (icon) icon.style.transform = !isOpen ? 'rotate(180deg)' : '';
+                }
+            });
+        });
+
+        /* ────────────────────────────────────────────────────────
+           Smile Assessment Quiz
+        ──────────────────────────────────────────────────────── */
+        let currentQuizGoal = 'Veneers';
+
+        document.querySelectorAll('#quiz-step-1 .quiz-opt').forEach(opt => {
+            opt.addEventListener('click', () => {
+                document.querySelectorAll('#quiz-step-1 .quiz-opt').forEach(o => o.classList.remove('selected'));
+                opt.classList.add('selected');
+                currentQuizGoal = opt.dataset.goal;
+                const timeline = opt.dataset.timeline;
+
+                setTimeout(() => {
+                    document.getElementById('quiz-step-1').classList.add('hidden');
+                    document.getElementById('quiz-step-2').classList.remove('hidden');
+                    document.getElementById('quiz-step').textContent = '2';
+                    document.getElementById('quiz-timeline').textContent = timeline.split(' · ')[0];
+                    document.getElementById('quiz-goal-label').textContent = timeline.split(' · ')[1] || '';
+                    document.getElementById('quiz-service-name').textContent = currentQuizGoal;
+                }, 350);
+            });
+        });
+
+        function resetQuiz() {
+            document.getElementById('quiz-step-1').classList.remove('hidden');
+            document.getElementById('quiz-step-2').classList.add('hidden');
+            document.getElementById('quiz-step').textContent = '1';
+            document.querySelectorAll('#quiz-step-1 .quiz-opt').forEach(o => o.classList.remove('selected'));
+        }
+
+        function openQuiz() {
+            const el = document.getElementById('transformation');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function bookFromQuiz() {
+            openModal(currentQuizGoal);
+        }
+
+        /* ────────────────────────────────────────────────────────
+           Ambient Audio & Tour Video Sound
+        ──────────────────────────────────────────────────────── */
+        let audioCtx = null;
+        let ambientGain = null;
+        let isAudioPlaying = false;
+
+        function toggleAmbientSound() {
+            const video = document.getElementById('tour-video');
+            const soundText = document.getElementById('sound-text');
+            const soundIcon = document.getElementById('sound-icon');
+
+            if (!isAudioPlaying) {
+                // Unmute video
+                if (video) {
+                    video.muted = false;
+                    video.volume = 0.8;
+                }
+
+                // Web Audio Spa Tone generator (432Hz ambient chord)
+                try {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (!audioCtx) audioCtx = new AudioContext();
+                    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                    ambientGain = audioCtx.createGain();
+                    ambientGain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                    ambientGain.connect(audioCtx.destination);
+
+                    [432, 648, 864].forEach(freq => {
+                        const osc = audioCtx.createOscillator();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                        osc.connect(ambientGain);
+                        osc.start();
+                    });
+                } catch(e) {}
+
+                isAudioPlaying = true;
+                soundText.textContent = "Mute sound";
+                soundIcon.setAttribute('data-lucide', 'volume-x');
+            } else {
+                if (video) video.muted = true;
+                if (ambientGain && audioCtx) {
+                    ambientGain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.5);
+                }
+                isAudioPlaying = false;
+                soundText.textContent = "Play ambient audio";
+                soundIcon.setAttribute('data-lucide', 'volume-2');
+            }
+            lucide.createIcons();
+        }
+
+        /* ────────────────────────────────────────────────────────
+           Multi-Step Booking Modal & Validation
+        ──────────────────────────────────────────────────────── */
+        const modal = document.getElementById('modal');
+        let selectedService = 'Veneers';
+        let selectedDoctor = 'Dr. Elise Reeves';
+
+        // Set default minimum booking date to today
+        const dateInput = document.getElementById('booking-date');
+        if (dateInput) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.min = today;
+            dateInput.value = today;
+        }
+
+        function openModal(preselect) {
+            if (preselect) {
+                selectedService = preselect;
+                document.querySelectorAll('.modal-opt').forEach(opt => {
+                    const match = opt.dataset.value.toLowerCase() === preselect.toLowerCase();
+                    opt.classList.toggle('selected', match);
+                    const radio = opt.querySelector('input');
+                    if (radio) radio.checked = match;
+                });
+            }
+
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.classList.remove('open');
+            document.body.style.overflow = '';
+            setTimeout(() => {
+                document.querySelectorAll('.modal-step').forEach(s => s.classList.add('hidden'));
+                const step1 = document.querySelector('.modal-step[data-step="1"]');
+                if (step1) step1.classList.remove('hidden');
+                document.getElementById('modal-progress').style.width = '33%';
+                document.getElementById('modal-step-num').textContent = '1';
+                document.getElementById('form-error').classList.add('hidden');
+            }, 300);
+        }
+
+        modal.addEventListener('click', closeModal);
+
+        // Escape Key Modal Listener
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('open')) {
+                closeModal();
+            }
+        });
+
+        // Step 1 service selection
+        document.querySelectorAll('.modal-opt').forEach(opt => {
+            opt.addEventListener('click', () => {
+                document.querySelectorAll('.modal-opt').forEach(o => o.classList.remove('selected'));
+                opt.classList.add('selected');
+                selectedService = opt.dataset.value;
+                const radio = opt.querySelector('input');
+                if (radio) radio.checked = true;
+            });
+        });
+
+        // Step 2 doctor selection
+        document.querySelectorAll('.doctor-opt').forEach(opt => {
+            opt.addEventListener('click', () => {
+                document.querySelectorAll('.doctor-opt').forEach(o => o.classList.remove('selected'));
+                opt.classList.add('selected');
+                selectedDoctor = opt.dataset.doctor;
+                const radio = opt.querySelector('input');
+                if (radio) radio.checked = true;
+            });
+        });
+
+        function nextStep(n) {
+            document.querySelectorAll('.modal-step').forEach(s => s.classList.add('hidden'));
+            const target = document.querySelector(`.modal-step[data-step="${n}"]`);
+            if (target) target.classList.remove('hidden');
+            document.getElementById('modal-progress').style.width = (n / 3 * 100) + '%';
+            document.getElementById('modal-step-num').textContent = n;
+        }
+
+        function prevStep(n) {
+            nextStep(n);
+        }
+
+        function confirmBooking() {
+            const name = document.getElementById('cust-name').value.trim();
+            const email = document.getElementById('cust-email').value.trim();
+            const phone = document.getElementById('cust-phone').value.trim();
+            const date = document.getElementById('booking-date').value;
+            const errorEl = document.getElementById('form-error');
+
+            if (!name || !email || !phone) {
+                errorEl.textContent = "Please provide your name, email, and phone number.";
+                errorEl.classList.remove('hidden');
+                return;
+            }
+            errorEl.classList.add('hidden');
+
+            // Format receipt
+            const receipt = document.getElementById('booking-receipt');
+            if (receipt) {
+                receipt.innerHTML = `
+                    <div class="flex justify-between border-b border-sky-200/50 pb-1.5 font-medium">
+                        <span class="text-slate-500">Patient:</span>
+                        <span class="font-semibold text-ink">${name}</span>
+                    </div>
+                    <div class="flex justify-between border-b border-sky-200/50 pb-1.5 font-medium">
+                        <span class="text-slate-500">Service:</span>
+                        <span class="font-semibold text-sky-700">${selectedService}</span>
+                    </div>
+                    <div class="flex justify-between border-b border-sky-200/50 pb-1.5 font-medium">
+                        <span class="text-slate-500">Provider:</span>
+                        <span class="font-semibold text-teal-700">${selectedDoctor}</span>
+                    </div>
+                    <div class="flex justify-between font-medium">
+                        <span class="text-slate-500">Scheduled Date:</span>
+                        <span class="font-semibold text-ink">${date || 'Next Available'}</span>
+                    </div>
+                `;
+            }
+
+            document.querySelectorAll('.modal-step').forEach(s => s.classList.add('hidden'));
+            document.querySelector('.modal-step[data-step="4"]').classList.remove('hidden');
+            document.getElementById('modal-progress').style.width = '100%';
+        }
+    </script>
+
+</body>
+
+</html>
